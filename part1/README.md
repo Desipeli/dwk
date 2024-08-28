@@ -121,3 +121,74 @@ k3d cluster create --port 8082:30080@agent:0 -p 8081:80@loadbalancer --agents 2
 kubectl apply -f todo-app/manifests/deployment.yml 
 kubectl apply -f todo-app/manifests/service.yml 
 ```
+
+## Exercise 1.07: External access with Ingress
+
+Added http server to the logger
+
+deployment.yml
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: log-output-dep
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: log-output
+  template:
+    metadata:
+      labels:
+        app: log-output
+    spec:
+      containers:
+        - name: log-output
+          image: desipeli/dwk-log-output:0.2
+          env:
+          - name: PORT
+            value: "8001"
+```
+
+service.yaml
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: log-output-svc
+spec:
+  type: ClusterIP
+  selector:
+    app: log-output
+  ports:
+    - port: 2345
+      protocol: TCP
+      targetPort: 8001
+```
+
+ingress.yaml
+```
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dwk-ingress
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: log-output-svc
+            port:
+              number: 2345
+```
+
+Commands
+```
+k3d cluster create --port 8082:30080@agent:0 -p 8081:80@loadbalancer --agents 2
+kubectl apply -f log-output/manifests/deployment.yml
+kubectl apply -f log-output/manifests/service.yaml
+kubectl apply -f log-output/manifests/ingress.yaml
+```
