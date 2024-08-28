@@ -96,3 +96,28 @@ Forwarding from 127.0.0.1:8001 -> 8000
 Forwarding from [::1]:8001 -> 8000
 Handling connection for 8001
 ```
+
+## Exercise 1.06: Project 0.4
+
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo-app-svc
+spec:
+  type: NodePort
+  selector:
+    app: todo-app
+  ports:
+    - name: http
+      nodePort: 30080 
+      protocol: TCP
+      port: 1234
+      targetPort: 8000
+```
+
+```
+k3d cluster create --port 8082:30080@agent:0 -p 8081:80@loadbalancer --agents 2
+kubectl apply -f todo-app/manifests/deployment.yml 
+kubectl apply -f todo-app/manifests/service.yml 
+```
