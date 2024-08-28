@@ -27,4 +27,4 @@ jobs:
         with:
           context: ./log-output
           push: true
-          tags: desipeli/dwk-log-output:{{ github.event.inputs.tag || 'latest' }}
+          tags: desipeli/dwk-log-output:${{ github.event.inputs.tag}}
