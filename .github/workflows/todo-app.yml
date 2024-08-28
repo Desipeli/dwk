@@ -1,4 +1,4 @@
-name: deploy dockerhub
+name: deploy todo-app to dockerhub
 on:
   push:
     branches:
