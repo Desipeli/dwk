@@ -20,3 +20,47 @@ I created a simple web server with Go. The port can be set with environment vari
 ```
 kubectl create deployment todo-app --image=desipeli/dwk-todo-app
 ```
+
+## Exercise 1.03: Declarative approach
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: log-output-dep
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: log-output
+  template:
+    metadata:
+      labels:
+        app: log-output
+    spec:
+      containers:
+        - name: log-output
+          image: desipeli/dwk-log-output:0.1
+```
+
+## Exercise 1.04: Project v0.2
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-app-dep
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-app
+  template:
+    metadata:
+      labels:
+        app: todo-app
+    spec:
+      containers:
+        - name: todo-app
+          image: desipeli/dwk-todo-app:0.2
+```
