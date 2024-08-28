@@ -261,3 +261,76 @@ dessu@fleda2:~/koulu/dwk$ kubectl apply -f todo-app/manifests/deployment.yaml
 dessu@fleda2:~/koulu/dwk$ kubectl apply -f todo-app/manifests/service.yaml 
 dessu@fleda2:~/koulu/dwk$ kubectl apply -f todo-app/manifests/ingress.yaml 
 ```
+
+## Exercise 1.09: More services
+
+### ping-pong
+
+deployment.yaml
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ping-pong-dep
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ping-pong
+  template:
+    metadata:
+      labels:
+        app: ping-pong
+    spec:
+      containers:
+        - name: ping-pong
+          image: desipeli/dwk-pingpong:0.1
+          env:
+          - name: PORT
+            value: "8002"
+```
+
+service.yaml
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: ping-pong-svc
+spec:
+  type: ClusterIP
+  selector:
+    app: ping-pong
+  ports:
+    - port: 3456
+      protocol: TCP
+      targetPort: 8002
+```
+
+### log-output
+
+ingress.yaml
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dwk-ingress
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: log-output-svc
+            port:
+              number: 2345
+      - path: /pingpong
+        pathType: Prefix
+        backend:
+          service:
+            name: ping-pong-svc
+            port:
+              number: 3456
+```
+
