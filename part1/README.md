@@ -64,3 +64,35 @@ spec:
         - name: todo-app
           image: desipeli/dwk-todo-app:0.2
 ```
+
+## Exercise 1.05: Project v0.3
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-app-dep
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-app
+  template:
+    metadata:
+      labels:
+        app: todo-app
+    spec:
+      containers:
+        - name: todo-app
+          image: desipeli/dwk-todo-app:0.3
+          env:
+          - name: PORT
+            value: "8000"
+```
+
+```
+kubectl port-forward todo-app-dep-85d4cf558f-w5p2v 8001:8000
+Forwarding from 127.0.0.1:8001 -> 8000
+Forwarding from [::1]:8001 -> 8000
+Handling connection for 8001
+```
