@@ -13,4 +13,4 @@ WORKDIR /app
 
 COPY --from=build /app/todo-app .
 
-CMD ["./log-output"]
+CMD ["./todo-app"]
