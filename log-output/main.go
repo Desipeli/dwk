@@ -38,5 +38,9 @@ func logTimestampAndMessage(msg string) {
 }
 
 func handleGet(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/" {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
 	w.Write([]byte(logMessage))
 }
