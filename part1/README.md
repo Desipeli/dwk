@@ -23,7 +23,7 @@ kubectl create deployment todo-app --image=desipeli/dwk-todo-app
 
 ## Exercise 1.03: Declarative approach
 
-```
+```yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -45,7 +45,7 @@ spec:
 
 ## Exercise 1.04: Project v0.2
 
-```
+```yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -67,7 +67,7 @@ spec:
 
 ## Exercise 1.05: Project v0.3
 
-```
+```yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -90,7 +90,7 @@ spec:
             value: "8000"
 ```
 
-```
+```bash
 kubectl port-forward todo-app-dep-85d4cf558f-w5p2v 8001:8000
 Forwarding from 127.0.0.1:8001 -> 8000
 Forwarding from [::1]:8001 -> 8000
@@ -99,7 +99,7 @@ Handling connection for 8001
 
 ## Exercise 1.06: Project 0.4
 
-```
+```yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -116,7 +116,7 @@ spec:
       targetPort: 8000
 ```
 
-```
+```bash
 k3d cluster create --port 8082:30080@agent:0 -p 8081:80@loadbalancer --agents 2
 kubectl apply -f todo-app/manifests/deployment.yml 
 kubectl apply -f todo-app/manifests/service.yml 
@@ -127,7 +127,7 @@ kubectl apply -f todo-app/manifests/service.yml
 Added http server to the logger
 
 deployment.yml
-```
+```yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -151,7 +151,7 @@ spec:
 ```
 
 service.yaml
-```
+```yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -167,7 +167,7 @@ spec:
 ```
 
 ingress.yaml
-```
+```yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -186,9 +186,78 @@ spec:
 ```
 
 Commands
-```
+```bash
 k3d cluster create --port 8082:30080@agent:0 -p 8081:80@loadbalancer --agents 2
 kubectl apply -f log-output/manifests/deployment.yml
 kubectl apply -f log-output/manifests/service.yaml
 kubectl apply -f log-output/manifests/ingress.yaml
+```
+
+## Exercise 1.08: Project v0.5
+
+deployment.yaml
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-app-dep
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-app
+  template:
+    metadata:
+      labels:
+        app: todo-app
+    spec:
+      containers:
+        - name: todo-app
+          image: desipeli/dwk-todo-app:0.3
+          env:
+          - name: PORT
+            value: "8000"
+```
+
+service.yaml
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo-app-svc
+spec:
+  type: ClusterIP
+  selector:
+    app: todo-app
+  ports:
+    - port: 2345
+      protocol: TCP
+      targetPort: 8000
+```
+
+ingress.yaml
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dwk-ingress
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: todo-app-svc
+            port:
+              number: 2345
+```
+
+Commands
+```bash
+kubectl delete -f log-output/manifests/ingress.yaml
+dessu@fleda2:~/koulu/dwk$ kubectl apply -f todo-app/manifests/deployment.yaml 
+dessu@fleda2:~/koulu/dwk$ kubectl apply -f todo-app/manifests/service.yaml 
+dessu@fleda2:~/koulu/dwk$ kubectl apply -f todo-app/manifests/ingress.yaml 
 ```
