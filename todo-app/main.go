@@ -12,7 +12,7 @@ func main() {
 		port = "8000"
 	}
 
-	log.Printf("Server started in port %s", port)
+	log.Printf("Server started in port: %s", port)
 	portAddr := ":" + port
 	http.ListenAndServe(portAddr, nil)
 }
