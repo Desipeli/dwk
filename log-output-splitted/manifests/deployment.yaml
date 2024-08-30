@@ -20,12 +20,12 @@ spec:
             claimName: pings-claim
       containers:
         - name: log-writer
-          image: desipeli/dwk-log-writer:0.11
+          image: desipeli/dwk-log-writer:0.12
           volumeMounts:
           - name: shared-logs
             mountPath: /app/files/pod
         - name: log-reader
-          image: desipeli/dwk-log-reader:0.11
+          image: desipeli/dwk-log-reader:0.12
           volumeMounts:
           - name: shared-logs
             mountPath: /app/files/pod
