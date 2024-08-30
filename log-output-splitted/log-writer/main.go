@@ -13,7 +13,7 @@ func main() {
 	}
 
 	for {
-		logTimestampToFile("files/logs.log")
+		logTimestampToFile("files/pod/logs.log")
 		time.Sleep(5 * time.Second)
 	}
 

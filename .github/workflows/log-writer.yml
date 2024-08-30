@@ -25,6 +25,6 @@ jobs:
       - name: build and push
         uses: docker/build-push-action@v4
         with:
-          context: ./log-writer
+          context: ./log-output-splitted/log-writer
           push: true
           tags: desipeli/dwk-log-writer:${{ github.event.inputs.tag}}

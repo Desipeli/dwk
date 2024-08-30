@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logpod-dep
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logpod
+  template:
+    metadata:
+      labels:
+        app: logpod
+    spec:
+      volumes:
+        - name: shared-logs
+          emptyDir: {}
+        - name: shared-pings
+          persistentVolumeClaim:
+            claimName: pings-claim
+      containers:
+        - name: log-writer
+          image: desipeli/dwk-log-writer:0.11
+          volumeMounts:
+          - name: shared-logs
+            mountPath: /app/files/pod
+        - name: log-reader
+          image: desipeli/dwk-log-reader:0.11
+          volumeMounts:
+          - name: shared-logs
+            mountPath: /app/files/pod
+          env:
+          - name: PORT
+            value: "8001"
