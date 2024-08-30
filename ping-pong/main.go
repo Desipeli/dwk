@@ -27,5 +27,11 @@ func main() {
 func handleGetPingPong(w http.ResponseWriter, r *http.Request) {
 	response := fmt.Sprintf("pong %d", counter)
 	counter++
+
+	err := os.WriteFile("files/shared/pings.txt", []byte(string(counter)), 0644)
+	if err != nil {
+		log.Printf("error when writing pings to file: %v", err)
+	}
+
 	w.Write([]byte(response))
 }

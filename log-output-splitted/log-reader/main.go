@@ -30,16 +30,22 @@ func handleGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	content, err := os.ReadFile("files/pod/logs.log")
+	timestamp, err := os.ReadFile("files/pod/logs.log")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte("could not read log file"))
 		return
 	}
 
+	pings, err := os.ReadFile(("files/shared/pings.txt"))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("could not read the ping file"))
+	}
+
 	hash := uuid.New()
 
-	message := fmt.Sprintf("%s %s", content, hash)
+	message := fmt.Sprintf("%s %s\nPing / Pongs: %s", timestamp, hash, pings)
 
 	w.Write([]byte(message))
 }
