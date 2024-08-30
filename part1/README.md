@@ -334,3 +334,8 @@ spec:
               number: 3456
 ```
 
+## Exercise 1.10: Even more services
+
+I splitted the log-output app to log-reader and log-writer
+
+[manifests](e_1.10/)
