@@ -30,7 +30,7 @@ func handleGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	content, err := os.ReadFile("logs.log")
+	content, err := os.ReadFile("files/logs.log")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte("could not read log file"))
