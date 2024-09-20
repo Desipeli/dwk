@@ -39,8 +39,7 @@ func handleGet(w http.ResponseWriter, r *http.Request) {
 
 	pings, err := os.ReadFile(("files/shared/pings.txt"))
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("could not read the ping file"))
+		pings = []byte("0")
 	}
 
 	hash := uuid.New()

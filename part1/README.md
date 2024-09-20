@@ -339,3 +339,13 @@ spec:
 I splitted the log-output app to log-reader and log-writer
 
 [manifests](e_1.10/)
+
+## Exercise 1.11: Persisting data
+
+Created a local path in the node: `docker exec k3d-k3s-default-agent-0 mkdir -p /tmp/kube`
+
+Modified [log-reader](../log-output-splitted/log-reader/main.go) and [ping-pong](../ping-pong/main.go) to use persistent directory.
+
+[persistentvolume, claim and ingress](e_1.11/)
+
+Applied new configurations for ping-pong and log-output apps.

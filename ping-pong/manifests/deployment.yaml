@@ -14,11 +14,11 @@ spec:
     spec:
       volumes:
         - name: shared-pings
-          persistenVolumeClaim:
+          persistentVolumeClaim:
             claimName: pings-claim
       containers:
         - name: ping-pong
-          image: desipeli/dwk-pingpong:0.2
+          image: desipeli/dwk-pingpong:1.11
           volumeMounts:
           - name: shared-pings
             mountPath: /app/files/shared

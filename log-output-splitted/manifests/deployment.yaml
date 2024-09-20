@@ -20,15 +20,18 @@ spec:
             claimName: pings-claim
       containers:
         - name: log-writer
-          image: desipeli/dwk-log-writer:0.2
+          image: desipeli/dwk-log-writer:1.11
           volumeMounts:
           - name: shared-logs
             mountPath: /app/files/pod
         - name: log-reader
-          image: desipeli/dwk-log-reader:0.2
+          image: desipeli/dwk-log-reader:1.11
+          imagePullPolicy: Always
           volumeMounts:
           - name: shared-logs
             mountPath: /app/files/pod
+          - name: shared-pings
+            mountPath: /app/files/shared
           env:
           - name: PORT
             value: "8001"
