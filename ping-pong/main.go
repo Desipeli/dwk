@@ -5,9 +5,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 )
-
-var counter int
 
 func main() {
 	port := os.Getenv("PORT")
@@ -25,12 +24,28 @@ func main() {
 }
 
 func handleGetPingPong(w http.ResponseWriter, r *http.Request) {
-	response := fmt.Sprintf("pong %d", counter)
-	counter++
 
-	err := os.WriteFile("files/shared/pings.txt", []byte(string(counter)), 0644)
+	content, err := os.ReadFile("files/shared/pings.txt")
+	if err != nil {
+		content = []byte("0")
+	}
+	pings, err := strconv.Atoi(string(content))
+
+	if err != nil {
+		w.Write([]byte("error when converting string to int: "))
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	pings++
+	response := fmt.Sprintf("pong %d", pings)
+
+	err = os.WriteFile("files/shared/pings.txt", []byte(string(pings)), 0644)
 	if err != nil {
 		log.Printf("error when writing pings to file: %v", err)
+		w.Write([]byte("error when writing pings to file: "))
+		w.Write([]byte(err.Error()))
+		return
 	}
 
 	w.Write([]byte(response))
