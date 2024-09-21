@@ -7,10 +7,11 @@ COPY . .
 RUN go build .
 
 
-FROM scratch
+FROM alpine
 
 WORKDIR /app
 
 COPY --from=build /app/todo-app .
+RUN mkdir public
 
 CMD ["./todo-app"]

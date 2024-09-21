@@ -349,3 +349,12 @@ Modified [log-reader](../log-output-splitted/log-reader/main.go) and [ping-pong]
 [persistentvolume, claim and ingress](e_1.11/)
 
 Applied new configurations for ping-pong and log-output apps.
+
+## Exercise 1.12: Project v0.6
+
+Created a new directory for persistent data `docker exec k3d-k3s-default-agent-0 mkdir -p /tmp/todo`
+
+Modified [todo app](../todo-app/main.go) to download and save image and the timestamp.
+
+[Manifests](e_1.12/)
+
