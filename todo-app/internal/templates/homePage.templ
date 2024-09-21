@@ -1,24 +1,36 @@
 package templates
 
 
-templ HomePage() {
+templ HomePage(todosAddr string) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
 			<meta charset="UTF-8" />
 			<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+			<script src="https://unpkg.com/htmx.org@2.0.2"></script>
+			<meta name="htmx-config" content='{"selfRequestsOnly": false}' />
 			<title>Home Page</title>
 		</head>
 		<body style="margin: auto; display: block; width: 400px;">
 			<img src="/public/image.jpg" alt="A random image" width="400px"/>
-			<form action="#" >
-				<input type="text" maxlength="140"/>
+			<form 
+				hx-post={todosAddr}
+				hx-target="#todo-list"
+				hx-swap="innerHTML"
+				hx-on::after-request="clearTodoInput()"
+				>
+				<input type="text" name="todo" id="todo" maxlength="140"/>
 				<input type="submit" value="Create TODO"/>
 			</form>
-			<ul>
-				<li>TODO 1</li>
-				<li>TODO 2</li>
-			</ul>
+			
+			<ul hx-trigger="load" hx-get={todosAddr} hx-swap="innerHTML" id="todo-list"></ul>
+
+			<script>
+				function clearTodoInput() {
+					todoInput = document.getElementById("todo")
+					todoInput.value = ""
+				}
+			</script>
 		</body>
 	</html>
 }
