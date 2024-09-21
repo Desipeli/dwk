@@ -358,3 +358,11 @@ Modified [todo app](../todo-app/main.go) to download and save image and the time
 
 [Manifests](e_1.12/)
 
+## Exercise 1.13: Project v0.7
+
+Added
+
+- inputfield with maxlength=140
+- create TODO button
+- hardcoded todos
+
