@@ -17,7 +17,8 @@ func main() {
 	}
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /pingpong", handleGetPingPong)
+	mux.HandleFunc("GET /pingpong", handleGetPing)
+	mux.HandleFunc("GET /", handleGetCurrentPongs)
 
 	portAddr := ":" + port
 
@@ -25,7 +26,16 @@ func main() {
 	http.ListenAndServe(portAddr, mux)
 }
 
-func handleGetPingPong(w http.ResponseWriter, r *http.Request) {
+func handleGetCurrentPongs(w http.ResponseWriter, r *http.Request) {
+	content, err := os.ReadFile(pingsPath)
+	if err != nil {
+		content = []byte("0")
+	}
+
+	w.Write([]byte(content))
+}
+
+func handleGetPing(w http.ResponseWriter, r *http.Request) {
 
 	content, err := os.ReadFile(pingsPath)
 	if err != nil {

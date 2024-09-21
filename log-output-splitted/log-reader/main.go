@@ -2,12 +2,15 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
 
 	"github.com/google/uuid"
 )
+
+const pingAddr = "http://ping-pong-svc:3456"
 
 func main() {
 	port := os.Getenv("PORT")
@@ -37,14 +40,27 @@ func handleGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pings, err := os.ReadFile(("files/shared/pings.txt"))
+	// pings, err := os.ReadFile(("files/shared/pings.txt"))
+	// if err != nil {
+	// 	pings = []byte("0")
+	// }
+
+	pongResponse, err := http.Get(pingAddr)
 	if err != nil {
-		pings = []byte("0")
+		log.Fatal(err)
 	}
+	defer pongResponse.Body.Close()
+
+	body, err := io.ReadAll(pongResponse.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	pongs := string(body)
 
 	hash := uuid.New()
 
-	message := fmt.Sprintf("%s %s\nPing / Pongs: %s", timestamp, hash, pings)
+	message := fmt.Sprintf("%s %s\nPing / Pongs: %s", timestamp, hash, pongs)
 
 	w.Write([]byte(message))
 }
