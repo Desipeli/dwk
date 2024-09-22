@@ -13,15 +13,16 @@ spec:
         app: ping-pong
     spec:
       volumes:
-        - name: shared-pings
+        - name: saved-pings
           persistentVolumeClaim:
             claimName: pings-claim
       containers:
         - name: ping-pong
           image: desipeli/dwk-pingpong:2.01
+          imagePullPolicy: Always
           volumeMounts:
-          - name: shared-pings
-            mountPath: /app/files/shared
+          - name: saved-pings
+            mountPath: /app/files/
           env:
           - name: PORT
             value: "8002"

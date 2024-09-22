@@ -7,7 +7,7 @@ COPY . .
 RUN go build .
 
 
-FROM scratch
+FROM alpine
 
 WORKDIR /app
 

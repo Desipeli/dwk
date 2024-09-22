@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-const pingsPath = "files/shared/pings.txt"
+const pingsPath = "files/pings.txt"
 
 func main() {
 	port := os.Getenv("PORT")
