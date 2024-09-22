@@ -43,3 +43,32 @@ persistentvolumeclaim/pings-claim created
 service/logpod-svc created
 service/ping-pong-svc created
 ```
+
+## Exercise 2.04: Project v1.1
+
+```bash
+kubectl delete -f part2/e_2.02/
+deployment.apps "todo-app-dep" deleted
+ingress.networking.k8s.io "dwk-todo-ingress" deleted
+persistentvolume "todo-pv" deleted
+persistentvolumeclaim "todo-claim" deleted
+service "todo-app-svc" deleted
+service "todo-backend-svc" deleted
+
+
+$ kubectl create namespace dwk-project
+namespace/dwk-project created
+
+$ kubens dwk-project 
+Context "k3d-k3s-default" modified.
+Active namespace is "dwk-project".
+
+kubectl apply -f part2/e_2.02/
+deployment.apps/todo-app-dep created
+ingress.networking.k8s.io/dwk-todo-ingress created
+persistentvolume/todo-pv created
+persistentvolumeclaim/todo-claim created
+service/todo-app-svc created
+service/todo-backend-svc created
+
+```
