@@ -10,7 +10,10 @@ import (
 	"github.com/google/uuid"
 )
 
-const pingAddr = "http://ping-pong-svc:3456"
+const (
+	pingAddr            = "http://ping-pong-svc:3456"
+	informationFilePath = "config/information.txt"
+)
 
 func main() {
 	port := os.Getenv("PORT")
@@ -40,11 +43,6 @@ func handleGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// pings, err := os.ReadFile(("files/shared/pings.txt"))
-	// if err != nil {
-	// 	pings = []byte("0")
-	// }
-
 	pongResponse, err := http.Get(pingAddr)
 	if err != nil {
 		log.Fatal(err)
@@ -60,7 +58,14 @@ func handleGet(w http.ResponseWriter, r *http.Request) {
 
 	hash := uuid.New()
 
-	message := fmt.Sprintf("%s %s\nPing / Pongs: %s", timestamp, hash, pongs)
+	information, err := os.ReadFile(informationFilePath)
+	if err != nil {
+		log.Fatalf("error when opening config/instructions.txt, %v", err)
+	}
 
-	w.Write([]byte(message))
+	envMessage := os.Getenv("MESSAGE")
+
+	site := fmt.Sprintf("file content: %senv variable: MESSAGE=%s\n%s %s\nPing / Pongs: %s", information, envMessage, timestamp, hash, pongs)
+
+	w.Write([]byte(site))
 }

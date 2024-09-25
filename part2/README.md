@@ -72,3 +72,17 @@ service/todo-app-svc created
 service/todo-backend-svc created
 
 ```
+
+## Exercise 2.06: Documentation and ConfigMaps
+
+[manifests](e_2.06/)
+
+Created [configmap](e_2.06/configmap_reader.yaml) and added it to [deployment.yaml](e_2.06/deployment.yaml)
+
+```bash
+$ kubectl exec -it my-busybox -- wget -qO - http://logpod-svc:2345
+file content: This is text from file
+env variable: MESSAGE=Hello Wörld
+2024-09-25 09:29:52.113 +0000 7a989879-d230-4376-a48e-74b78e95dbfc
+Ping / Pongs: 39
+```
