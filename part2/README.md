@@ -110,3 +110,7 @@ $ sops --decrypt secret.enc.yaml > secret.yaml
 ## Exercise 2.08: Poject v1.2
 
 Changed the todo-backend to save and read todos to a postgres database in a separate pod. The database set up is similar to previous exercise.
+
+## Exercise 2.09: Daily todos
+
+[This cronjob](e_2.09/daily-todo-cron.yaml) creates new todo with random wikipedia url every hour.
