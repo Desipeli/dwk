@@ -5,16 +5,19 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strconv"
+
+	"github.com/jackc/pgx/v5"
 )
 
-const pingsPath = "files/pings.txt"
+var databaseURL string
 
 func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8002"
 	}
+
+	databaseURL = os.Getenv("DATABASE_URL")
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /pingpong", handleGetPing)
@@ -27,36 +30,67 @@ func main() {
 }
 
 func handleGetCurrentPongs(w http.ResponseWriter, r *http.Request) {
-	content, err := os.ReadFile(pingsPath)
+	pongs, err := getPongsFromDb(r)
 	if err != nil {
-		content = []byte("0")
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
-	w.Write([]byte(content))
+	w.Write([]byte(string(pongs)))
 }
 
 func handleGetPing(w http.ResponseWriter, r *http.Request) {
 
-	content, err := os.ReadFile(pingsPath)
+	pongs, err := increasePongs(r)
 	if err != nil {
-		content = []byte("0")
-	}
-	pings, err := strconv.Atoi(string(content))
-
-	if err != nil {
-		pings = 0
-	}
-
-	pings++
-	response := fmt.Sprintf("pong %d", pings)
-
-	err = os.WriteFile(pingsPath, []byte(strconv.Itoa(pings)), 0644)
-	if err != nil {
-		log.Printf("error when writing pings to file: %v", err)
-		w.Write([]byte("error when writing pings to file: "))
-		w.Write([]byte(err.Error()))
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
+	response := fmt.Sprintf("pong %d", pongs)
+
 	w.Write([]byte(response))
+}
+
+func getPongsFromDb(r *http.Request) (int64, error) {
+
+	conn, err := pgx.Connect(r.Context(), databaseURL)
+	if err != nil {
+		log.Println(err)
+		return 0, err
+	}
+	defer conn.Close(r.Context())
+
+	var pongs int64
+	err = conn.QueryRow(r.Context(), "SELECT pongs FROM pings").Scan(&pongs)
+	if err != nil {
+		log.Println(err)
+		return 0, err
+	}
+
+	return pongs, nil
+}
+
+func increasePongs(r *http.Request) (int64, error) {
+	conn, err := pgx.Connect(r.Context(), databaseURL)
+	if err != nil {
+		log.Println(err)
+		return 0, err
+	}
+	defer conn.Close(r.Context())
+
+	_, err = conn.Exec(r.Context(), "UPDATE pings SET pongs = pongs+1 WHERE id=1")
+	if err != nil {
+		return 0, err
+	}
+
+	var pongs int64
+	err = conn.QueryRow(r.Context(), "SELECT pongs FROM pings").Scan(&pongs)
+	if err != nil {
+		return 0, err
+	}
+
+	return pongs, nil
 }

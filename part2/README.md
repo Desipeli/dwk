@@ -86,3 +86,23 @@ env variable: MESSAGE=Hello Wörld
 2024-09-25 09:29:52.113 +0000 7a989879-d230-4376-a48e-74b78e95dbfc
 Ping / Pongs: 39
 ```
+
+## Exercise 2.07: Stateful applications
+
+[Manifests](e_2.07/)
+
+Changed pingpong app to save and read counter from postgres database. Set initialisazion [script](e_2.07/init-sql.yaml) for database using ConfigMap.
+
+Created [secret](e_2.07/secret.enc.yaml) and encrypted it with command:
+
+```bash
+sops --encrypt --age age1mcxnf7uc4vwame00e36s9u5znc4lztxccg67fp223nrkk8yntq8qn96n3t --encrypted-regex '^(data)$' part2/e_2.07/secret.yaml > part2/e_2.07/secret.enc.yaml
+```
+
+Secret can be encrypted with private key after the key is exported:
+
+```bash
+$ export SOPS_AGE_KEY_FILE=key.txt
+
+$ sops --decrypt secret.enc.yaml > secret.yaml
+```
