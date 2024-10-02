@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-app-dep
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-app
+  template:
+    metadata:
+      labels:
+        app: todo-app
+    spec:
+      volumes:
+        - name: persistentdata
+          persistentVolumeClaim:
+            claimName: todo-claim
+      containers:
+        - name: todo-app
+          image: desipeli/dwk-todo-app:2.02
+          imagePullPolicy: Always
+          env:
+          - name: PORT
+            value: "8000"
+          - name: BACKEND_ADDR
+            value: http://localhost:8081
+        - name: todo-backend
+          image: desipeli/dwk-todo-backend:2.08
+          env:
+          - name: PORT
+            value: "8003"
+          envFrom:
+            - secretRef:
+                name: todo-database-secret

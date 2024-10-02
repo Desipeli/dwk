@@ -6,15 +6,19 @@ import (
 	"net/http"
 	"os"
 	"strings"
+
+	"github.com/jackc/pgx/v5"
 )
 
-var todos []string
+var databaseURL string
 
 func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8003"
 	}
+
+	databaseURL = os.Getenv("DATABASE_URL")
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/todos", handleTodos)
@@ -49,7 +53,12 @@ func handleTodos(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleGetTodos(w http.ResponseWriter, r *http.Request) {
-	response := getTodoLi()
+	response, err := getTodoLi(r)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 	w.Header().Set("Content-Type", "text/html")
 	w.Write([]byte(response))
 }
@@ -57,29 +66,77 @@ func handleGetTodos(w http.ResponseWriter, r *http.Request) {
 func handlePostTodos(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	newTodo := strings.TrimSpace(r.FormValue("todo"))
 	if len(newTodo) > 140 || len(newTodo) < 1 {
+		log.Println(err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	todos = append(todos, newTodo)
+	conn, err := pgx.Connect(r.Context(), databaseURL)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	defer conn.Close(r.Context())
+
+	_, err = conn.Exec(r.Context(), "INSERT INTO todos(todo) VALUES ($1)", newTodo)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 
 	w.WriteHeader(http.StatusCreated)
 	w.Header().Set("Content-Type", "text/html")
 
-	response := getTodoLi()
+	response, err := getTodoLi(r)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 	w.Write([]byte(response))
 }
-func getTodoLi() string {
+func getTodoLi(r *http.Request) (string, error) {
 	var todoList string
-	for _, todo := range todos {
-		todoList += fmt.Sprintf("<li>%s</li>", todo)
+
+	conn, err := pgx.Connect(r.Context(), databaseURL)
+	if err != nil {
+		return "", err
+	}
+	defer conn.Close(r.Context())
+
+	var todos []Todo
+
+	rows, err := conn.Query(r.Context(), "SELECT id, todo FROM todos")
+	if err != nil {
+		return "", err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var todo Todo
+		if err := rows.Scan(&todo.Id, &todo.Text); err != nil {
+			return "", err
+		}
+		todos = append(todos, todo)
 	}
 
-	return todoList
+	for _, todo := range todos {
+		todoList += fmt.Sprintf("<li id=%d>%s</li>", todo.Id, todo.Text)
+	}
+
+	return todoList, nil
+}
+
+type Todo struct {
+	Id   int
+	Text string
 }
