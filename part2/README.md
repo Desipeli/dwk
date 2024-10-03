@@ -114,3 +114,12 @@ Changed the todo-backend to save and read todos to a postgres database in a sepa
 ## Exercise 2.09: Daily todos
 
 [This cronjob](e_2.09/daily-todo-cron.yaml) creates new todo with random wikipedia url every hour.
+
+## Exercise 2.10: Project v1.3
+
+Added request logger to todo-backend. Followed the instructions on Monitoring part for logging.
+
+Todo longer than 140 characters returns 400 and the backend does not save it.
+```bash
+2024/10/03 10:49:22 10.42.1.36:44990 POST /todos todo=abdufhjeusabdufhjeusabdufhjeusabdufhjeusabdufhjeusabdufhjeusabdufhjeusabdufhjeusabdufhjeusabdufhjeusabdufhjeusabdufhjeusabdufhjeusabdufhjeusa HTTP/1.1 400 24.285µs
+```

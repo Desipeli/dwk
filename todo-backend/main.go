@@ -1,11 +1,14 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -24,7 +27,7 @@ func main() {
 	mux.HandleFunc("/todos", handleTodos)
 
 	portAddr := ":" + port
-	err := http.ListenAndServe(portAddr, mux)
+	err := http.ListenAndServe(portAddr, LoggingMiddleware(mux))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -64,6 +67,7 @@ func handleGetTodos(w http.ResponseWriter, r *http.Request) {
 }
 
 func handlePostTodos(w http.ResponseWriter, r *http.Request) {
+
 	err := r.ParseForm()
 	if err != nil {
 		log.Println(err)
@@ -139,4 +143,45 @@ func getTodoLi(r *http.Request) (string, error) {
 type Todo struct {
 	Id   int
 	Text string
+}
+
+func LoggingMiddleware(next http.Handler) http.Handler {
+	// Interceptor is needed to access the satuscode
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
+
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			log.Printf("Error reading request body: %v", err)
+		}
+
+		// Restore the body so it can be read again by the next handler
+		r.Body = io.NopCloser(bytes.NewBuffer(body))
+
+		rw := &responseWriterInterceptor{w, http.StatusOK}
+
+		// The end point
+		next.ServeHTTP(rw, r)
+
+		log.Printf(
+			"%s %s %s %s %s %d %v",
+			r.RemoteAddr,
+			r.Method,
+			r.URL.Path,
+			string(body),
+			r.Proto,
+			rw.status,
+			time.Since(start),
+		)
+	})
+}
+
+type responseWriterInterceptor struct {
+	http.ResponseWriter
+	status int
+}
+
+func (rw *responseWriterInterceptor) WriteHeader(status int) {
+	rw.status = status
+	rw.ResponseWriter.WriteHeader(status)
 }
