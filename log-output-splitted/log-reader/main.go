@@ -1,8 +1,8 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"os"
@@ -10,8 +10,8 @@ import (
 	"github.com/google/uuid"
 )
 
-const (
-	pingAddr            = "http://ping-pong-svc:3456"
+var (
+	pingAddr            = "http://ping-pong-svc"
 	informationFilePath = "config/information.txt"
 )
 
@@ -19,6 +19,11 @@ func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8001"
+	}
+
+	pingServiceAddr := os.Getenv("PING_ADDR")
+	if pingServiceAddr != "" {
+		pingAddr = pingServiceAddr
 	}
 
 	mux := http.NewServeMux()
@@ -31,6 +36,8 @@ func main() {
 }
 
 func handleGet(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+
 	if r.URL.Path != "/" {
 		w.WriteHeader(http.StatusNotFound)
 		return
@@ -49,12 +56,14 @@ func handleGet(w http.ResponseWriter, r *http.Request) {
 	}
 	defer pongResponse.Body.Close()
 
-	body, err := io.ReadAll(pongResponse.Body)
+	var data PongData
+
+	err = json.NewDecoder(pongResponse.Body).Decode(&data)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
-	pongs := string(body)
+	pongs := data.Pongs
 
 	hash := uuid.New()
 
@@ -65,7 +74,12 @@ func handleGet(w http.ResponseWriter, r *http.Request) {
 
 	envMessage := os.Getenv("MESSAGE")
 
-	site := fmt.Sprintf("file content: %senv variable: MESSAGE=%s\n%s %s\nPing / Pongs: %s", information, envMessage, timestamp, hash, pongs)
+	site := fmt.Sprintf("file content: %s<br>env variable: MESSAGE=%s<br>%s %s<br>Ping / Pongs: %d", information, envMessage, timestamp, hash, pongs)
 
+	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(site))
+}
+
+type PongData struct {
+	Pongs int64
 }

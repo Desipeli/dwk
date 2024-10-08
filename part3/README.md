@@ -9,6 +9,12 @@ $ gcloud container clusters create dwk-cluster --zone=europe-north1-b --cluster-
 $ sudo apt install google-cloud-cli-gke-gcloud-auth-plugin
 ```
 
+Delete the cluster with:
+
+```bash
+gcloud container clusters delete dwk-cluster --zone=europe-north1-b 
+```
+
 ## Exercise 3.01: Pingpong GKE
 
 [Manifests](e_3.01/)
@@ -27,4 +33,21 @@ ping-pong-svc   LoadBalancer   34.118.235.199   34.88.127.25   80:30115/TCP   38
 
 $ curl 34.88.127.25/pingpong
 pong 10
+```
+
+## Exercise 3.02: Back to Ingress
+
+[Manifests](e_3.02/)
+
+- Deployed log and pingpong apps to GKE
+- Changed the communication between log and pingpong to use json
+- Services are exposed with Ingress
+
+```bash
+$ curl http://34.144.230.54/
+file content: This is text from file
+<br>env variable: MESSAGE=Hello Wörld<br>2024-10-08 10:43:23.665 +0000 51ac1a7b-46e6-45a9-a2f1-3f9843084874<br>Ping / Pongs: 35
+
+$ curl http://34.144.230.54/pingpong
+pong 36
 ```

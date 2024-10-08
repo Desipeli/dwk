@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -37,7 +38,19 @@ func handleGetCurrentPongs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Write([]byte(string(pongs)))
+	data := map[string]int64{
+		"pongs": pongs,
+	}
+
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonData)
 }
 
 func handleGetPing(w http.ResponseWriter, r *http.Request) {

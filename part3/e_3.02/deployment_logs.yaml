@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logpod-dep
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logpod
+  template:
+    metadata:
+      labels:
+        app: logpod
+    spec:
+      volumes:
+        - name: shared-logs
+          emptyDir: {}
+        - name: configmap-volume
+          configMap:
+            name: configmap-reader
+            items:
+              - key: "information.txt" 
+                path: "information.txt"
+      containers:
+        - name: log-writer
+          image: desipeli/dwk-log-writer:1.11
+          volumeMounts:
+          - name: shared-logs
+            mountPath: /app/files/pod
+        - name: log-reader
+          image: desipeli/dwk-log-reader:3.02
+          imagePullPolicy: Always
+          volumeMounts:
+          - name: shared-logs
+            mountPath: /app/files/pod
+          - name: configmap-volume
+            mountPath: "/app/config"
+            readOnly: true
+          env:
+          - name: PORT
+            value: "8001"
+          - name: MESSAGE
+            valueFrom:
+              configMapKeyRef:
+                name: configmap-reader
+                key: message

@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-ingress
+  labels:
+    name: app-ingress
+spec:
+  rules:
+    - http:
+        paths:
+        - pathType: Prefix
+          path: "/"
+          backend:
+            service:
+              name: logpod-svc
+              port:
+                number: 80
+        - pathType: Prefix
+          path: "/pingpong"
+          backend:
+            service:
+              name: ping-pong-svc
+              port: 
+                number: 80
