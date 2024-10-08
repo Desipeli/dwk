@@ -117,9 +117,16 @@ Changed the todo-backend to save and read todos to a postgres database in a sepa
 
 ## Exercise 2.10: Project v1.3
 
-Added request logger to todo-backend. Followed the instructions on Monitoring part for logging.
+Added request logger to todo-backend. Followed the instructions in Monitoring part for logging.
 
-Todo longer than 140 characters returns 400 and the backend does not save it.
+Todo longer than 140 characters returns 400 and the backend doesn't save it.
+```bash
+$ curl -X POST -d "todo=abdufhjeusabdufhjeusabdufhjeusabdufhjeusabdufhjeusabdufhjeusabdufhjeusabdufhjeusabdufhjeusabdufhjeusabdufhjeusabdufhjeusabdufhjeusabdufhjeusa" http://localhost:8081/todos
+```
+
+Log from Loki:
 ```bash
 2024/10/03 10:49:22 10.42.1.36:44990 POST /todos todo=abdufhjeusabdufhjeusabdufhjeusabdufhjeusabdufhjeusabdufhjeusabdufhjeusabdufhjeusabdufhjeusabdufhjeusabdufhjeusabdufhjeusabdufhjeusabdufhjeusa HTTP/1.1 400 24.285µs
 ```
+
+Everything works, even though Grafana displays error `Unable to connect with Loki. Please check the server logs for more details.` in Data source settings.
