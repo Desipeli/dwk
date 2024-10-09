@@ -24,4 +24,4 @@ spec:
           - name: PORT
             value: "8000"
           - name: BACKEND_ADDR
-            value: http://todo-backend-svc
+            value: http://todo-backend-svc:5678
