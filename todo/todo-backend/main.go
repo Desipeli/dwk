@@ -25,12 +25,17 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/todos", handleTodos)
+	mux.HandleFunc("GET /", handleRoot)
 
 	portAddr := ":" + port
 	err := http.ListenAndServe(portAddr, LoggingMiddleware(mux))
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func handleRoot(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
 }
 
 func handleTodos(w http.ResponseWriter, r *http.Request) {
