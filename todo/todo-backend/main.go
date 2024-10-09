@@ -25,7 +25,7 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/todos", handleTodos)
-	mux.HandleFunc("GET /", handleRoot)
+	mux.HandleFunc("/", handleRoot)
 
 	portAddr := ":" + port
 	err := http.ListenAndServe(portAddr, LoggingMiddleware(mux))
@@ -35,7 +35,9 @@ func main() {
 }
 
 func handleRoot(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
+	if r.Method == http.MethodGet {
+		w.WriteHeader(http.StatusOK)
+	}
 }
 
 func handleTodos(w http.ResponseWriter, r *http.Request) {
