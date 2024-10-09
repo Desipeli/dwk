@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: daily-todo-cron
+spec:
+  schedule: "0 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: hello
+            image: busybox
+            command:
+            - /bin/sh
+            - -c
+            - |
+              WIKIPEDIA=$(wget --server-response --spider https://en.wikipedia.org/wiki/Special:Random 2>&1 | grep -i Location | awk '{print $2}' | tr -d '\r')
+              echo "$WIKIPEDIA"
+              wget --post-data="todo=$WIKIPEDIA" http://todo-backend-svc/todos
+          restartPolicy: OnFailure

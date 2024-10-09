@@ -51,3 +51,9 @@ file content: This is text from file
 $ curl http://34.144.230.54/pingpong
 pong 36
 ```
+
+## Exercise 3.03:
+
+- Created service account here: [https://console.cloud.google.com/iam-admin/serviceaccounts/](https://console.cloud.google.com/iam-admin/serviceaccounts/) with required roles
+- Created key and added it to GitHub secrets
+- Created Docker repository Google Cloud
