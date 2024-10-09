@@ -31,6 +31,8 @@ func main() {
 		backendAddr = backendAddrEnv
 	}
 
+	log.Printf("Backend url: %s", backendAddr)
+
 	mux := http.NewServeMux()
 
 	mux.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))
