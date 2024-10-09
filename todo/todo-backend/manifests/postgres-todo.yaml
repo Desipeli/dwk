@@ -22,6 +22,7 @@ spec:
           volumeMounts:
             - name: todo-data-storage
               mountPath: /var/lib/postgresql/data/
+              subPath: postgres
             - name: init-config
               mountPath: /docker-entrypoint-initdb.d/
           envFrom:
