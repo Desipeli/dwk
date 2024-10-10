@@ -23,5 +23,5 @@ spec:
           env:
           - name: PORT
             value: "8000"
-          - name: BACKEND_ADDR
-            value: http://todo-backend-svc:5678
+          # - name: BACKEND_ADDR
+          #   value: http://todo-backend-svc:5678

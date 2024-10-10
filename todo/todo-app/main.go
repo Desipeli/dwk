@@ -16,22 +16,11 @@ const (
 	timeLayout             = "2006-01-02 15:04:05.999 -0700"
 )
 
-var backendAddr string
-
 func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8000"
 	}
-
-	backendAddrEnv := os.Getenv("BACKEND_ADDR")
-	if backendAddrEnv == "" {
-		backendAddr = "http://localhost:8003"
-	} else {
-		backendAddr = backendAddrEnv
-	}
-
-	log.Printf("Backend url: %s", backendAddr)
 
 	mux := http.NewServeMux()
 
@@ -58,7 +47,7 @@ func homePage(w http.ResponseWriter, r *http.Request) {
 		log.Print(err)
 	}
 
-	page := templates.HomePage(backendAddr + "/todos")
+	page := templates.HomePage("/todos")
 	page.Render(r.Context(), w)
 
 }

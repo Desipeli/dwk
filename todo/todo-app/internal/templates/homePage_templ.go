@@ -8,7 +8,7 @@ package templates
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-func HomePage(todosAddr string) templ.Component {
+func HomePage(backendPath string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -26,14 +26,14 @@ func HomePage(todosAddr string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><script src=\"https://unpkg.com/htmx.org@2.0.2\"></script><meta name=\"htmx-config\" content=\"{&#34;selfRequestsOnly&#34;: false}\"><title>Home Page</title></head><body style=\"margin: auto; display: block; width: 400px;\"><img src=\"/public/image.jpg\" alt=\"A random image\" width=\"400px\"><form hx-post=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><script src=\"https://unpkg.com/htmx.org@2.0.2\"></script><meta name=\"htmx-config\" content=\"{&#34;selfRequestsOnly&#34;: false}\"><title>Home Page</title></head><body style=\"margin: auto; display: block; width: 400px;\"><img src=\"/public/image.jpg\" alt=\"A random image\" width=\"400px\"><form id=\"todo-form\" hx-post=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
-		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(todosAddr)
+		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(backendPath)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/homePage.templ`, Line: 17, Col: 22}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/homePage.templ`, Line: 18, Col: 24}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -44,15 +44,15 @@ func HomePage(todosAddr string) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
-		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(todosAddr)
+		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(backendPath)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/homePage.templ`, Line: 26, Col: 42}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/homePage.templ`, Line: 27, Col: 44}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-swap=\"innerHTML\" id=\"todo-list\"></ul><script>\n\t\t\t\tfunction clearTodoInput() {\n\t\t\t\t\ttodoInput = document.getElementById(\"todo\")\n\t\t\t\t\ttodoInput.value = \"\"\n\t\t\t\t}\n\t\t\t</script></body></html>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-swap=\"innerHTML\" id=\"todo-list\"></ul><script>\n\n\t\t\t\tdocument.addEventListener(\"DOMContentLoaded\", function() {\n\t\t\t\t\tconst backendPath = \"{{backendPath}}\"\n\t\t\t\t\tconst baseUrl = window.location.origin\n\n\t\t\t\t\tdocument.getElementById(\"todo-form\").setAttribute(\"hx-post\", `${baseUrl}${backendPath}`)\n\t\t\t\t\tdocument.getElementById(\"todo-list\").setAttribute(\"hx-get\", `${baseUrl}${backendPath}`)\n\t\t\t\t})\n\n\t\t\t\tfunction clearTodoInput() {\n\t\t\t\t\ttodoInput = document.getElementById(\"todo\")\n\t\t\t\t\ttodoInput.value = \"\"\n\t\t\t\t}\n\t\t\t</script></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
