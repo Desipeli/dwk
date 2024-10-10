@@ -4,6 +4,9 @@ on:
   push:
     paths:
       - todo/**
+  pull_request:
+    branches:
+      - main
 
 env:
   SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
@@ -15,6 +18,7 @@ env:
   IMAGE_BACKEND: todo-backend
   SERVICE_BACKEND: todo-backend
   BRANCH: ${{ github.ref_name }}
+  NAMESPACE: ${GITHUB_REF#refs/heads/}
 
 jobs:
   build-publish-deploy:
@@ -63,20 +67,26 @@ jobs:
       - name: Decrypt secret
         run: sops --decrypt secret.enc.yaml > secret.yaml
 
+      - name: Configure namespace
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            echo "NAMESPACE=default" >> $GITHUB_ENV
+          fi
+            
+      - name: echo namespace
+        run: echo "$NAMESPACE"
+
       - name: Set up Kustomize
         uses: imranismail/setup-kustomize@v2
 
       - name: Deploy app and backend
         run: |-
-          kubectl create namespace ${GITHUB_REF#refs/heads/} || true
-          kubectl config set-context --current --namespace=${GITHUB_REF#refs/heads/}
-          kustomize edit set namespace ${GITHUB_REF#refs/heads/}
-          kustomize edit set image TODOAPP/IMAGE=gcr.io/$PROJECT_ID/$IMAGE_APP:${GITHUB_REF#refs/heads/}-$GITHUB_SHA
-          kustomize edit set image TODOBACKEND/IMAGE=gcr.io/$PROJECT_ID/$IMAGE_BACKEND:${GITHUB_REF#refs/heads/}-$GITHUB_SHA
+          kubectl create namespace $NAMESPACE || true
+          kubectl config set-context --current --namespace=$NAMESPACE
+          kustomize edit set namespace $NAMESPACE
+          kustomize edit set image TODOAPP/IMAGE=gcr.io/$PROJECT_ID/$IMAGE_APP:$NAMESPACE-$GITHUB_SHA
+          kustomize edit set image TODOBACKEND/IMAGE=gcr.io/$PROJECT_ID/$IMAGE_BACKEND:$NAMESPACE-$GITHUB_SHA
           kustomize build . | kubectl apply -f -
           kubectl rollout status deployment $SERVICE_BACKEND
           kubectl rollout status deployment $SERVICE_APP
           kubectl get services -o wide
-      
-      - name: Testing to event ref
-        run: echo "${{ github.event.ref }}"
