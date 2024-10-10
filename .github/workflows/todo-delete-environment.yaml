@@ -36,5 +36,5 @@ jobs:
           location: '${{ env.GKE_ZONE }}'
       
       - name: Delete namespace
-        run: kubectl delete namespace "${{ env.BRANCH }}"
+        run: kubectl delete namespace ${GITHUB_REF#refs/heads/}
     
