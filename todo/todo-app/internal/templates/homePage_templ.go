@@ -39,14 +39,14 @@ func HomePage(backendPath string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"#todo-list\" hx-swap=\"innerHTML\" hx-on::after-request=\"clearTodoInput()\"><input type=\"text\" name=\"todo\" id=\"todo\" maxlength=\"140\"> <input type=\"submit\" value=\"Create TODO\"></form><p><b>Todos</b></p><ul hx-trigger=\"load\" hx-get=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"#todo-list\" hx-swap=\"innerHTML\" hx-on::after-request=\"clearTodoInput()\"><input type=\"text\" name=\"todo\" id=\"todo\" maxlength=\"140\"> <input type=\"submit\" value=\"Create TODO\"></form><br><p><b>Todos</b></p><ul hx-trigger=\"load\" hx-get=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(backendPath)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/homePage.templ`, Line: 27, Col: 44}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/homePage.templ`, Line: 28, Col: 44}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
