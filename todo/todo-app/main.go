@@ -23,7 +23,6 @@ func main() {
 	}
 
 	mux := http.NewServeMux()
-
 	mux.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))
 	mux.HandleFunc("/", homePage)
 
