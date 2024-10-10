@@ -18,7 +18,7 @@ env:
   IMAGE_BACKEND: todo-backend
   SERVICE_BACKEND: todo-backend
   BRANCH: ${{ github.ref_name }}
-  NAMESPACE: ${GITHUB_REF#refs/heads/}
+  NAMESPACE: ${{ GITHUB_REF#refs/heads/ }}
 
 jobs:
   build-publish-deploy:
