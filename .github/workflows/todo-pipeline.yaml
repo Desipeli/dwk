@@ -51,7 +51,8 @@ jobs:
           if [ "$BRANCH" == "main" ]; then
             echo "NAMESPACE=default" >> $GITHUB_ENV
           else
-            echo "NAMESPACE=${{ GITHUB_REF#refs/heads/ }}" >> $GITHUB_ENV
+            BRANCH_NAME=${ GITHUB_REF#refs/heads/ }
+            echo "NAMESPACE=$BRANCH_NAME" >> $GITHUB_ENV
           fi
 
       - name: Build app
@@ -72,11 +73,7 @@ jobs:
 
       - name: Decrypt secret
         run: sops --decrypt secret.enc.yaml > secret.yaml
-
-      - name: Configure namespace
-        run: |
-          if [ "${{ github.event_name }}" == "push" ]; then
-            
+          
 
       - name: Set up Kustomize
         uses: imranismail/setup-kustomize@v2
