@@ -23,6 +23,7 @@ templ HomePage(backendPath string) {
 				<input type="text" name="todo" id="todo" maxlength="140"/>
 				<input type="submit" value="Create TODO"/>
 			</form>
+			<br>
 			<p><b>Todos</b></p>
 			<ul hx-trigger="load" hx-get={backendPath} hx-swap="innerHTML" id="todo-list"></ul>
 
