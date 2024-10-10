@@ -77,3 +77,6 @@ jobs:
           kubectl rollout status deployment $SERVICE_BACKEND
           kubectl rollout status deployment $SERVICE_APP
           kubectl get services -o wide
+      
+      - name: Testing to event ref
+        run: echo "${{ github.event.ref }}"
