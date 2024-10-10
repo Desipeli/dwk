@@ -51,7 +51,7 @@ jobs:
           if [ "$BRANCH" == "main" ]; then
             echo "NAMESPACE=default" >> $GITHUB_ENV
           else
-            BRANCH_NAME=${ GITHUB_REF#refs/heads/ }
+            BRANCH_NAME=${GITHUB_REF#refs/heads/}
             echo "NAMESPACE=$BRANCH_NAME" >> $GITHUB_ENV
           fi
 
