@@ -51,7 +51,7 @@ jobs:
           if [ "$BRANCH" == "main" ]; then
             echo "NAMESPACE=default" >> $GITHUB_ENV
           else
-            echo "NAMESPACE=${{ github.ref#refs/heads/ }}" >> $GITHUB_ENV
+            echo "NAMESPACE=${{ GITHUB_REF#refs/heads/ }}" >> $GITHUB_ENV
           fi
 
       - name: Build app
