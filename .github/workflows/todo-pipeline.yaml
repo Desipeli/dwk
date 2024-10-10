@@ -2,6 +2,8 @@ name: Release application
 
 on:
   push:
+    paths:
+      - todo/**
 
 env:
   SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}

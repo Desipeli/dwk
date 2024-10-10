@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-app
+  template:
+    metadata:
+      labels:
+        app: todo-app
+    spec:
+      volumes:
+        - name: persistentdata
+          persistentVolumeClaim:
+            claimName: todo-claim
+      containers:
+        - name: todo-app
+          image: TODOAPP/IMAGE
+          imagePullPolicy: Always
+          env:
+          - name: PORT
+            value: "8000"
+          # - name: BACKEND_ADDR
+          #   value: http://todo-backend-svc:5678

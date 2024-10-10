@@ -52,8 +52,14 @@ $ curl http://34.144.230.54/pingpong
 pong 36
 ```
 
-## Exercise 3.03:
+## Exercise 3.03: Project v1.4
+
+[yamls](e_3.03/)
 
 - Created service account here: [https://console.cloud.google.com/iam-admin/serviceaccounts/](https://console.cloud.google.com/iam-admin/serviceaccounts/) with required roles
-- Created key and added it to GitHub secrets
+- Created GKE_SA_KEY and added it to GitHub secrets
 - Created Docker repository Google Cloud
+- Moved todo-app and todo-backend under todo directory
+- kustomization.yaml, ingress.yaml and secret.enc.yaml under todo. All the app specific manifests under todo-app/manifests, same for backend.
+- Created [Pipeline](e_3.03/pipeline/todo-pipeline.yaml) that builds and pushes app and backend to GCR, ecrypts secret and runs Kustomize to deploy project
+- Made some changes to project for it to work.
