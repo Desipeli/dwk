@@ -63,3 +63,40 @@ pong 36
 - kustomization.yaml, ingress.yaml and secret.enc.yaml under todo. All the app specific manifests under todo-app/manifests, same for backend.
 - Created [Pipeline](e_3.03/pipeline/todo-pipeline.yaml) that builds and pushes app and backend to GCR, ecrypts secret and runs Kustomize to deploy project
 - Made some changes to project for it to work.
+
+## Exercise 3.04: Project v1.4.1
+
+- Created new branch `$ git switch -c e-3-04`
+- Changed the page title from Home Page to Todo App
+
+```bash
+$ kubens default
+Context "gke_dwk2024_europe-north1-b_dwk-cluster" modified.
+Active namespace is "default".
+
+$ kubectl get ing
+NAME               CLASS    HOSTS   ADDRESS         PORTS   AGE
+dwk-todo-ingress   <none>   *       34.144.230.54   80      93m
+
+$ kubens e-3-04 
+Context "gke_dwk2024_europe-north1-b_dwk-cluster" modified.
+Active namespace is "e-3-04".
+
+$ kubectl get ing
+NAME               CLASS    HOSTS   ADDRESS         PORTS   AGE
+dwk-todo-ingress   <none>   *       34.110.172.16   80      8m3s
+
+
+k$ curl http://34.110.172.16/ | grep -o '<title>.*</title>'
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  1208    0  1208    0     0   141k      0 --:--:-- --:--:-- --:--:--  147k
+<title>Todo App</title>
+
+$ curl http://34.144.230.54/ | grep -o '<title>.*</title>'
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  1209    0  1209    0     0   141k      0 --:--:-- --:--:-- --:--:--  147k
+<title>Home Page</title>
+
+```
