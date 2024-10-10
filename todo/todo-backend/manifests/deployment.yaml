@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: todo-backend-dep
+  name: todo-backend
 spec:
   replicas: 1
   selector:
