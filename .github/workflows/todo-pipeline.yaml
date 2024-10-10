@@ -4,6 +4,7 @@ on:
   push:
 
 env:
+  SOPS_AGE_KEY: ${{ secrets.SOPS_KEY }}
   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
   GKE_CLUSTER: dwk-cluster
   GKE_ZONE: europe-north1-b
@@ -50,6 +51,9 @@ jobs:
         run: docker build --tag "gcr.io/$PROJECT_ID/$IMAGE_BACKEND:$BRANCH-$GITHUB_SHA" ./todo-backend
       - name: Publish backend
         run: docker push "gcr.io/$PROJECT_ID/$IMAGE_BACKEND:$BRANCH-$GITHUB_SHA"
+
+      - name: Decrypt secret
+        run: sops --decrypt secret.enc.yaml > secret.yaml
 
       - name: Set up Kustomize
         uses: imranismail/setup-kustomize@v2
