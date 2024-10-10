@@ -26,7 +26,7 @@ func HomePage(backendPath string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><script src=\"https://unpkg.com/htmx.org@2.0.2\"></script><meta name=\"htmx-config\" content=\"{&#34;selfRequestsOnly&#34;: false}\"><title>Home Page</title></head><body style=\"margin: auto; display: block; width: 400px;\"><img src=\"/public/image.jpg\" alt=\"A random image\" width=\"400px\"><form id=\"todo-form\" hx-post=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><script src=\"https://unpkg.com/htmx.org@2.0.2\"></script><meta name=\"htmx-config\" content=\"{&#34;selfRequestsOnly&#34;: false}\"><title>Todo App</title></head><body style=\"margin: auto; display: block; width: 400px;\"><img src=\"/public/image.jpg\" alt=\"A random image\" width=\"400px\"><form id=\"todo-form\" hx-post=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
