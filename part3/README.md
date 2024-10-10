@@ -100,3 +100,10 @@ $ curl http://34.144.230.54/ | grep -o '<title>.*</title>'
 <title>Home Page</title>
 
 ```
+
+## Exercise 3.05: Project v1.4.2
+
+[yamls](e_3.05/)
+
+- Modified pipeline yaml to work with pull requests
+- Created workflow that deletes namespace when branch is deleted from github
