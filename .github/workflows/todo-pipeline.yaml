@@ -51,9 +51,9 @@ jobs:
           if [ "$BRANCH" == "main" ]; then
             echo "NAMESPACE=default" >> $GITHUB_ENV
           else
-            BRANCH_NAME=${GITHUB_REF#refs/heads/}
-            echo "NAMESPACE=$BRANCH_NAME" >> $GITHUB_ENV
+            echo "NAMESPACE=$BRANCH" >> $GITHUB_ENV
           fi
+          echo "$NAMESPACE"
 
       - name: Build app
         run: docker build --tag "gcr.io/$PROJECT_ID/$IMAGE_APP:$BRANCH-$GITHUB_SHA" ./todo-app
