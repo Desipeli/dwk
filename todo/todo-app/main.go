@@ -104,5 +104,4 @@ func downloadNewImage() error {
 	}
 
 	return nil
-
 }
