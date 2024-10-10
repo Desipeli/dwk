@@ -35,12 +35,6 @@ jobs:
           project_id: '${{ env.PROJECT_ID }}'
           location: '${{ env.GKE_ZONE }}'
       
-      - name: refs heads
-        run: echo "${GITHUB_REF#refs/heads/}"
-      
-      - name: ref_name
-        run: echo "${{ github.ref_name }}"
-
-      - name: event ref
-        run: echo "${{ github.event.ref }}""
+      - name: Delete namespace
+        run: kubectl delete namespace ${{ github.event.ref }}
     
