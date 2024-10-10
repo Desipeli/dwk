@@ -17,5 +17,5 @@ spec:
             - |
               WIKIPEDIA=$(wget --server-response --spider https://en.wikipedia.org/wiki/Special:Random 2>&1 | grep -i Location | awk '{print $2}' | tr -d '\r')
               echo "$WIKIPEDIA"
-              wget --post-data="todo=$WIKIPEDIA" http://todo-backend-svc/todos
+              wget --post-data="todo=$WIKIPEDIA" http://todo-backend-svc:5678/todos
           restartPolicy: OnFailure
