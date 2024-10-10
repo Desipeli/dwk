@@ -4,9 +4,6 @@ on:
   push:
     paths:
       - todo/**
-  pull_request:
-    branches:
-      - main
 
 env:
   SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
@@ -18,7 +15,6 @@ env:
   IMAGE_BACKEND: todo-backend
   SERVICE_BACKEND: todo-backend
   BRANCH: ${{ github.ref_name }}
-  NAMESPACE: ${{ github.event.ref }}
 
 jobs:
   build-publish-deploy:
@@ -48,6 +44,16 @@ jobs:
           cluster_name: '${{ env.GKE_CLUSTER }}'
           project_id: '${{ env.PROJECT_ID }}'
           location: '${{ env.GKE_ZONE }}'
+
+      - name: namespace
+        run: |
+          echo "$BRANCH"
+          if [ "$BRANCH" == "main" ]; then
+            echo "NAMESPACE=default" >> $GITHUB_ENV
+          else
+            echo "NAMESPACE=${{ github.ref#refs/heads/ }}" >> $GITHUB_ENV
+          fi
+
       - name: Build app
         run: docker build --tag "gcr.io/$PROJECT_ID/$IMAGE_APP:$BRANCH-$GITHUB_SHA" ./todo-app
       - name: Publish app
@@ -69,12 +75,8 @@ jobs:
 
       - name: Configure namespace
         run: |
-          if [ "${{ github.event_name }}" == "pull_request" ]; then
-            echo "NAMESPACE=default" >> $GITHUB_ENV
-          fi
+          if [ "${{ github.event_name }}" == "push" ]; then
             
-      - name: echo namespace
-        run: echo "$NAMESPACE"
 
       - name: Set up Kustomize
         uses: imranismail/setup-kustomize@v2
