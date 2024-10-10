@@ -39,7 +39,7 @@ func HomePage(backendPath string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"#todo-list\" hx-swap=\"innerHTML\" hx-on::after-request=\"clearTodoInput()\"><input type=\"text\" name=\"todo\" id=\"todo\" maxlength=\"140\"> <input type=\"submit\" value=\"Create TODO\"></form><ul hx-trigger=\"load\" hx-get=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"#todo-list\" hx-swap=\"innerHTML\" hx-on::after-request=\"clearTodoInput()\"><input type=\"text\" name=\"todo\" id=\"todo\" maxlength=\"140\"> <input type=\"submit\" value=\"Create TODO\"></form><p><b>Todos</b></p><ul hx-trigger=\"load\" hx-get=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
