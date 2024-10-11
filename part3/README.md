@@ -107,3 +107,7 @@ $ curl http://34.144.230.54/ | grep -o '<title>.*</title>'
 
 - Modified pipeline yaml to work with pull requests
 - Created workflow that deletes namespace when branch is deleted from github
+
+## Exercise 3.06: DBaas vs DIY
+
+[Project](../todo/)
