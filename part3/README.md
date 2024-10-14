@@ -138,3 +138,15 @@ Done
 ```
 
 ![storage](e_3.07/backup.png)
+
+## Exercise 3.08: Project v1.5
+
+```bash
+$ kubectl top pod -l app=todo-app
+NAME                       CPU(cores)   MEMORY(bytes)   
+todo-app-bb7c87cb8-brq7r   1m           4Mi
+
+$ kubectl top pod -l app=todo-backend
+NAME                            CPU(cores)   MEMORY(bytes)   
+todo-backend-5cfbbf7744-4xmrq   9m           6Mi
+```

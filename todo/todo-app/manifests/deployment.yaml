@@ -23,5 +23,7 @@ spec:
           env:
           - name: PORT
             value: "8000"
-          # - name: BACKEND_ADDR
-          #   value: http://todo-backend-svc:5678
+          resources:
+            limits:
+              cpu: "10m"
+              memory: "15Mi"

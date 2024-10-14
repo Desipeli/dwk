@@ -22,3 +22,7 @@ spec:
           envFrom:
             - secretRef:
                 name: todo-database-secret
+          resources:
+            limits:
+              cpu: "15m"
+              memory: "20Mi"
