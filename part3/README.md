@@ -111,3 +111,30 @@ $ curl http://34.144.230.54/ | grep -o '<title>.*</title>'
 ## Exercise 3.06: DBaas vs DIY
 
 [Project](../todo/)
+
+## Exercise 3.07: Backup
+
+- Created [docker image](e_3.07/Dockerfile) for cronjob
+- Added service account secret with kubectl
+```bash
+$ kubectl create secret generic gcs-key --from-file=GKE_SA_KEY_secret.json
+secret/gcs-key created
+```
+- Added [cronjob](e_3.07/backup-cronjob.yaml)
+```bash
+$ kubectl apply -f part3/e_3.07/backup-cronjob.yaml 
+cronjob.batch/backup created
+```
+- Ran the job manually to test it
+```bash
+...
+pg_dump: creating CONSTRAINT "public.todos todos_pkey"
+Updated property [core/account].
+Activated service account credentials for: [dwk-part-3@dwk2024.iam.gserviceaccount.com]
+Copying file:///backups/2024-10-14-backup.sql to gs://dwk2024-db-backups/2024-10-14-backup.sql
+2024-10-14T09:10:49.563962507Z
+...
+Done
+```
+
+![storage](e_3.07/backup.png)

@@ -1,0 +1,41 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: backup
+spec:
+  schedule: "* 3 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: backup
+            image: desipeli/dwk-gcloud-postgres:latest
+            command:
+            - /bin/bash
+            - -c
+            - |
+              set -e
+              mkdir -p /backups
+              if [ $DATABASE_URL ]; then
+                DATE=$(date "+%Y-%m-%d")
+                FILENAME="$DATE-backup.sql"
+                pg_dump -v $DATABASE_URL > /backups/$FILENAME
+                gcloud config set account dwk-part-3@dwk2024.iam.gserviceaccount.com
+                export GKE_SA_KEY="secret/GKE_SA_KEY_secret.json"
+                gcloud auth activate-service-account --key-file=$GKE_SA_KEY
+                gcloud storage cp /backups/$FILENAME gs://dwk2024-db-backups
+              fi
+              echo "Done"
+            envFrom:
+            - secretRef:
+                name: todo-database-secret
+            volumeMounts:
+            - name: gcs-key
+              mountPath: /secret
+              readOnly: true
+          volumes:
+          - name: gcs-key
+            secret:
+              secretName: gcs-key
+          restartPolicy: OnFailure
