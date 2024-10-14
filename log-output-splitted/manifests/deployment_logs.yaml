@@ -23,27 +23,33 @@ spec:
                 path: "information.txt"
       containers:
         - name: log-writer
-          image: desipeli/dwk-log-writer:1.11
-          volumeMounts:
-          - name: shared-logs
-            mountPath: /app/files/pod
           resources:
             limits:
               cpu: "1m"
               memory: "10Mi"
+          image: desipeli/dwk-log-writer:1.11
+          volumeMounts:
+          - name: shared-logs
+            mountPath: /app/files/pod
         - name: log-reader
-          image: desipeli/dwk-log-reader:3.02
+          resources:
+            limits:
+              cpu: "1m"
+              memory: "10Mi"
+          image: desipeli/dwk-log-reader:4.01
           imagePullPolicy: Always
+          readinessProbe:
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            httpGet:
+              path: /healthz
+              port: 8001
           volumeMounts:
           - name: shared-logs
             mountPath: /app/files/pod
           - name: configmap-volume
             mountPath: "/app/config"
             readOnly: true
-          resources:
-              limits:
-                cpu: "1m"
-                memory: "10Mi"
           env:
           - name: PORT
             value: "8001"

@@ -14,15 +14,21 @@ spec:
     spec:
       containers:
         - name: ping-pong
-          image: desipeli/dwk-pingpong:3.02
+          image: desipeli/dwk-pingpong:4.01
           imagePullPolicy: Always
+          resources:
+            limits:
+              cpu: "50m"
+              memory: "10Mi"
+          readinessProbe:
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            httpGet:
+              path: /healthz
+              port: 8002
           env:
           - name: PORT
             value: "8002"
           envFrom:
             - secretRef:
                 name: ping-database-secret
-          resources:
-            limits:
-              cpu: "50m"
-              memory: "10Mi"
