@@ -164,3 +164,32 @@ backend
 
 - cpu: "100m"
 - memory: "20Mi"
+
+## Exercise 3.09: Resource limits
+
+Tried different values, these worked well:
+
+### log-reader
+
+```yaml
+cpu: "1m"
+memory: "10Mi"
+```
+
+### log-writer
+
+```yaml
+cpu: "1m"
+memory: "10Mi"
+```
+
+### ping-pong app
+
+```yaml
+cpu: "50m"
+memory: "10Mi"
+```
+
+## Exercise 3.10
+
+![log explorer](e_3.10/log_explorer.png)

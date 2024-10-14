@@ -27,8 +27,12 @@ spec:
           volumeMounts:
           - name: shared-logs
             mountPath: /app/files/pod
+          resources:
+            limits:
+              cpu: "1m"
+              memory: "10Mi"
         - name: log-reader
-          image: desipeli/dwk-log-reader:2.06
+          image: desipeli/dwk-log-reader:3.02
           imagePullPolicy: Always
           volumeMounts:
           - name: shared-logs
@@ -36,6 +40,10 @@ spec:
           - name: configmap-volume
             mountPath: "/app/config"
             readOnly: true
+          resources:
+              limits:
+                cpu: "1m"
+                memory: "10Mi"
           env:
           - name: PORT
             value: "8001"

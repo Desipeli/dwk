@@ -3,10 +3,10 @@ kind: Service
 metadata:
   name: logpod-svc
 spec:
-  type: ClusterIP
+  type: NodePort
   selector:
     app: logpod
   ports:
-    - port: 2345
+    - port: 80
       protocol: TCP
       targetPort: 8001
