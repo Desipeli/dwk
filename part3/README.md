@@ -150,3 +150,17 @@ $ kubectl top pod -l app=todo-backend
 NAME                            CPU(cores)   MEMORY(bytes)   
 todo-backend-5cfbbf7744-4xmrq   9m           6Mi
 ```
+
+I tried different values and ended up with:
+
+
+app:
+
+- cpu: "10m"
+- memory: "15Mi"
+
+
+backend
+
+- cpu: "100m"
+- memory: "20Mi"
