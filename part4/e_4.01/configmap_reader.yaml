@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configmap-reader
+data:
+  message: "Hello Wörld"
+
+  information.txt: |
+    This is text from file
+

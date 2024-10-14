@@ -27,12 +27,24 @@ func main() {
 	}
 
 	mux := http.NewServeMux()
+	mux.HandleFunc("GET /healthz", handleHealthCheck)
 	mux.HandleFunc("GET /", handleGet)
 
 	portAddr := ":" + port
 
 	log.Printf("Listening on port %s", port)
 	http.ListenAndServe(portAddr, mux)
+}
+
+func handleHealthCheck(w http.ResponseWriter, r *http.Request) {
+	pongResponse, err := http.Get(pingAddr)
+	if err != nil {
+		log.Printf("Health check failure: %v", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	defer pongResponse.Body.Close()
+	w.WriteHeader(http.StatusOK)
 }
 
 func handleGet(w http.ResponseWriter, r *http.Request) {

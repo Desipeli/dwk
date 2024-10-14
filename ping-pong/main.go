@@ -22,12 +22,24 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /pingpong", handleGetPing)
+	mux.HandleFunc("GET /healthz", handleHealthCheck)
 	mux.HandleFunc("GET /", handleGetCurrentPongs)
 
 	portAddr := ":" + port
 
 	log.Printf("Listening on port: %s", port)
 	http.ListenAndServe(portAddr, mux)
+}
+
+func handleHealthCheck(w http.ResponseWriter, r *http.Request) {
+	conn, err := pgx.Connect(r.Context(), databaseURL)
+	if err != nil {
+		log.Printf("Health check database error %v", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	conn.Close(r.Context())
+	w.WriteHeader(http.StatusOK)
 }
 
 func handleGetCurrentPongs(w http.ResponseWriter, r *http.Request) {
