@@ -16,14 +16,23 @@ const (
 	timeLayout             = "2006-01-02 15:04:05.999 -0700"
 )
 
+var backendServiceAddr string
+
 func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8000"
 	}
 
+	beAddr := os.Getenv("BACKEND_SERVICE_ADDR")
+	if beAddr == "" {
+		log.Fatal("Provide BACKEND_SERVICE_ADDR")
+	}
+	backendServiceAddr = beAddr
+
 	mux := http.NewServeMux()
 	mux.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))
+	mux.HandleFunc("/healthz", handleHealthCheck)
 	mux.HandleFunc("/", homePage)
 
 	log.Printf("Server started on port: %s", port)
@@ -32,6 +41,16 @@ func main() {
 	if err != nil {
 		log.Fatalf("Server failed to start: %v", err)
 	}
+}
+
+func handleHealthCheck(w http.ResponseWriter, r *http.Request) {
+	response, err := http.Get(backendServiceAddr)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(response.StatusCode)
 }
 
 func homePage(w http.ResponseWriter, r *http.Request) {

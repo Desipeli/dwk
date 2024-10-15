@@ -25,12 +25,25 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/todos", handleTodos)
+	mux.HandleFunc("/healthz", handleHealthCheck)
 	mux.HandleFunc("/", handleRoot)
 
 	portAddr := ":" + port
 	err := http.ListenAndServe(portAddr, LoggingMiddleware(mux))
 	if err != nil {
 		log.Fatal(err)
+	}
+}
+
+func handleHealthCheck(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet {
+		conn, err := pgx.Connect(r.Context(), databaseURL)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		defer conn.Close(r.Context())
+		w.WriteHeader(http.StatusOK)
 	}
 }
 

@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-app
+  template:
+    metadata:
+      labels:
+        app: todo-app
+    spec:
+      volumes:
+        - name: persistentdata
+          persistentVolumeClaim:
+            claimName: todo-claim
+      containers:
+        - name: todo-app
+          image: TODOAPP/IMAGE
+          imagePullPolicy: Always
+          env:
+          - name: PORT
+            value: "8000"
+          - name: BACKEND_SERVICE_ADDR
+            value: http://todo-backend-svc:5678
+          resources:
+            limits:
+              cpu: "10m"
+              memory: "15Mi"
+          readinessProbe:
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            httpGet:
+              path: /healthz
+              port: 8000
+          livenessProbe:
+            initialDelaySeconds: 20
+            periodSeconds: 5
+            httpGet:
+              path: /healthz
+              port: 8000

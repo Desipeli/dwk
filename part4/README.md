@@ -34,3 +34,33 @@ logpod-dep-6456bbc548-2n65f     2/2     Running   0          25m
 ping-pong-dep-b4fb67ff7-98f7x   1/1     Running   0          25m
 postgres-stset-0                1/1     Running   0          16s
 ```
+
+## Exercise 4.02: Project v1.7
+
+With incorrect database credentials and URL
+
+```bash
+$ kubectl get po
+NAME                            READY   STATUS    RESTARTS      AGE
+todo-app-547f68c9bb-dwjt8       0/1     Running   1 (9s ago)    50s
+todo-backend-6786b5488d-h5f9v   0/1     Running   1 (14s ago)   50s
+todo-postgres-stset-0           1/1     Running   0             50s
+
+$ kubectl get events | grep Unhealthy
+89s         Warning   Unhealthy           pod/todo-app-547f68c9bb-dwjt8        Readiness probe failed: HTTP probe failed with statuscode: 500
+84s         Warning   Unhealthy           pod/todo-app-547f68c9bb-dwjt8        Liveness probe failed: HTTP probe failed with statuscode: 500
+114s        Warning   Unhealthy           pod/todo-app-547f68c9bb-dwjt8        Readiness probe failed: Get "http://10.42.0.153:8000/healthz": EOF
+114s        Warning   Unhealthy           pod/todo-app-547f68c9bb-dwjt8        Readiness probe failed: Get "http://10.42.0.153:8000/healthz": dial tcp 10.42.0.153:8000: connect: connection refused
+94s         Warning   Unhealthy           pod/todo-backend-6786b5488d-h5f9v    Readiness probe failed: HTTP probe failed with statuscode: 500
+89s         Warning   Unhealthy           pod/todo-backend-6786b5488d-h5f9v    Liveness probe failed: HTTP probe failed with statuscode: 500
+
+$ kubectl apply -k part4/e_4.02/
+...
+
+$ kubectl get pod
+NAME                            READY   STATUS    RESTARTS      AGE
+todo-app-547f68c9bb-dwjt8       1/1     Running   5 (76s ago)   4m17s
+todo-backend-6786b5488d-h5f9v   1/1     Running   5 (81s ago)   4m17s
+todo-postgres-stset-0           1/1     Running   0             4m17s
+```
+
