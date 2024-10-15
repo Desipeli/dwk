@@ -64,3 +64,10 @@ todo-backend-6786b5488d-h5f9v   1/1     Running   5 (81s ago)   4m17s
 todo-postgres-stset-0           1/1     Running   0             4m17s
 ```
 
+## Exercise 4.03: Prometheus
+
+```
+sum(kube_pod_info{namespace="prometheus", created_by_kind="StatefulSet"})
+```
+
+![Query](e_4.03/prometheus-403.png)
