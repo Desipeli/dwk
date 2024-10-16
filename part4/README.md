@@ -71,3 +71,31 @@ sum(kube_pod_info{namespace="prometheus", created_by_kind="StatefulSet"})
 ```
 
 ![Query](e_4.03/prometheus-403.png)
+
+## Exercise 4.04: Project v1.8
+
+[manifests](e_4.04/)
+
+```bash
+kubectl create namespace argo-rollouts
+kubectl apply -n argo-rollouts -f https://github.com/argoproj/argo-rollouts/releases/latest/download/install.yaml
+
+```
+
+Argo Rollouts plugin
+
+```bash
+$ curl -LO https://github.com/argoproj/argo-rollouts/releases/latest/download/kubectl-argo-rollouts-linux-amd64
+
+$ chmod +x ./kubectl-argo-rollouts-linux-amd64
+
+$ sudo mv ./kubectl-argo-rollouts-linux-amd64 /usr/local/bin/kubectl-argo-rollouts
+```
+
+Cpu usage limit set to 0.2 works well
+
+![Analysis success](e_4.04/images/analysis_success.png)
+
+If the limit is set too low, the update fails and rolls back to previous
+
+![Analysis failed](e_4.04/images/analysis_failed.png)
