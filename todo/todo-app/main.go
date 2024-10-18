@@ -65,7 +65,7 @@ func homePage(w http.ResponseWriter, r *http.Request) {
 		log.Print(err)
 	}
 
-	page := templates.HomePage("/todos")
+	page := templates.HomePage()
 	page.Render(r.Context(), w)
 
 }

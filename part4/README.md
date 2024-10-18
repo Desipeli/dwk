@@ -99,3 +99,11 @@ Cpu usage limit set to 0.2 works well
 If the limit is set too low (0.001), the update fails and rolls back to previous
 
 ![Analysis failed](e_4.04/images/analysis_failed.png)
+
+## Exercise 4.05: Project v1.9
+
+[manifests](e_4.05/)
+
+- I changed the app to use json to transfer data
+- Added done field to database
+- Todos can be set to done

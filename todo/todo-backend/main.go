@@ -2,12 +2,12 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -24,6 +24,7 @@ func main() {
 	databaseURL = os.Getenv("DATABASE_URL")
 
 	mux := http.NewServeMux()
+	mux.HandleFunc("/todos/{id}", handleTodoDone)
 	mux.HandleFunc("/todos", handleTodos)
 	mux.HandleFunc("/healthz", handleHealthCheck)
 	mux.HandleFunc("/", handleRoot)
@@ -33,6 +34,38 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func handleTodoDone(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	if r.Method != http.MethodPut {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	id := r.PathValue("id")
+
+	conn, err := pgx.Connect(r.Context(), databaseURL)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	defer conn.Close(r.Context())
+
+	_, err = conn.Exec(r.Context(), "UPDATE todos SET done=true WHERE id=$1", id)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 }
 
 func handleHealthCheck(w http.ResponseWriter, r *http.Request) {
@@ -76,27 +109,43 @@ func handleTodos(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleGetTodos(w http.ResponseWriter, r *http.Request) {
-	response, err := getTodoLi(r)
+
+	todos, err := getTodos(r)
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", "text/html")
+
+	response, err := json.Marshal(todos)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(response))
 }
 
 func handlePostTodos(w http.ResponseWriter, r *http.Request) {
 
-	err := r.ParseForm()
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		log.Println(err)
+		log.Println("Error reading request body:", err)
+		http.Error(w, "Error reading request", http.StatusBadRequest)
+		return
+	}
+
+	var input TodoInput
+
+	err = json.Unmarshal(body, &input)
+	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	newTodo := strings.TrimSpace(r.FormValue("todo"))
-	if len(newTodo) > 140 || len(newTodo) < 1 {
+	if len(input.Todo) > 140 || len(input.Todo) < 1 {
 		log.Println(err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -110,7 +159,8 @@ func handlePostTodos(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close(r.Context())
 
-	_, err = conn.Exec(r.Context(), "INSERT INTO todos(todo) VALUES ($1)", newTodo)
+	var newTodo Todo
+	err = conn.QueryRow(r.Context(), "INSERT INTO todos(todo) VALUES ($1) RETURNING id, todo, done", input.Todo).Scan(&newTodo.Id, &newTodo.Text, &newTodo.Done)
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -118,51 +168,39 @@ func handlePostTodos(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusCreated)
-	w.Header().Set("Content-Type", "text/html")
+	json.NewEncoder(w).Encode(newTodo)
 
-	response, err := getTodoLi(r)
-	if err != nil {
-		log.Println(err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	w.Write([]byte(response))
 }
-func getTodoLi(r *http.Request) (string, error) {
-	var todoList string
-
+func getTodos(r *http.Request) ([]Todo, error) {
 	conn, err := pgx.Connect(r.Context(), databaseURL)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	defer conn.Close(r.Context())
 
-	var todos []Todo
-
-	rows, err := conn.Query(r.Context(), "SELECT id, todo FROM todos")
+	rows, err := conn.Query(r.Context(), "SELECT id, todo, done FROM todos WHERE done=false")
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	defer rows.Close()
 
+	var todos []Todo
+
 	for rows.Next() {
 		var todo Todo
-		if err := rows.Scan(&todo.Id, &todo.Text); err != nil {
-			return "", err
+		if err := rows.Scan(&todo.Id, &todo.Text, &todo.Done); err != nil {
+			return nil, err
 		}
 		todos = append(todos, todo)
 	}
 
-	for _, todo := range todos {
-		todoList += fmt.Sprintf("<li id=%d>%s</li>", todo.Id, todo.Text)
-	}
-
-	return todoList, nil
+	return todos, nil
 }
 
 type Todo struct {
 	Id   int
 	Text string
+	Done bool
 }
 
 func LoggingMiddleware(next http.Handler) http.Handler {
@@ -196,6 +234,10 @@ func LoggingMiddleware(next http.Handler) http.Handler {
 	})
 }
 
+type TodoInput struct {
+	Todo string `json:"todo"`
+}
+
 type responseWriterInterceptor struct {
 	http.ResponseWriter
 	status int
@@ -204,4 +246,13 @@ type responseWriterInterceptor struct {
 func (rw *responseWriterInterceptor) WriteHeader(status int) {
 	rw.status = status
 	rw.ResponseWriter.WriteHeader(status)
+}
+
+func getRequestURL(r *http.Request) string {
+	scheme := "http"
+	if r.TLS != nil {
+		scheme = "https"
+	}
+	host := r.Host
+	return fmt.Sprintf("%s://%s%s", scheme, host, r.URL.RequestURI())
 }

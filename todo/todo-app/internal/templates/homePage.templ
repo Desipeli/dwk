@@ -1,13 +1,12 @@
 package templates
 
 
-templ HomePage(backendPath string) {
+templ HomePage() {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
 			<meta charset="UTF-8" />
 			<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-			<script src="https://unpkg.com/htmx.org@2.0.2"></script>
 			<meta name="htmx-config" content='{"selfRequestsOnly": false}' />
 			<title>Todo App</title>
 		</head>
@@ -15,32 +14,97 @@ templ HomePage(backendPath string) {
 			<img src="/public/image.jpg" alt="A random image" width="400px"/>
 			<form 
 				id="todo-form"
-				hx-post={backendPath}
-				hx-target="#todo-list"
-				hx-swap="innerHTML"
-				hx-on::after-request="clearTodoInput()"
 				>
 				<input type="text" name="todo" id="todo" maxlength="140"/>
 				<input type="submit" value="Create TODO"/>
 			</form>
 			<br>
 			<p><b>Todos</b></p>
-			<ul hx-trigger="load" hx-get={backendPath} hx-swap="innerHTML" id="todo-list"></ul>
+			<ul  id="todo-list"></ul>
 
 			<script>
+				const backendURL = `${window.location.origin}/todos`
 
-				document.addEventListener("DOMContentLoaded", function() {
-					const backendPath = "{{backendPath}}"
-					const baseUrl = window.location.origin
+				const form = document.getElementById("todo-form")
+				const todoList = document.getElementById("todo-list")
 
-					document.getElementById("todo-form").setAttribute("hx-post", `${baseUrl}${backendPath}`)
-					document.getElementById("todo-list").setAttribute("hx-get", `${baseUrl}${backendPath}`)
+				async function sendTodo() {
+					const todo = document.getElementById("todo").value.trim()
+
+					try {
+						const response = await fetch(backendURL, {
+							method: "POST",
+							body: JSON.stringify({todo: todo})
+						})
+						await response.json().then(todo => {
+							createTodoElement(todo)
+							clearTodoInput()
+						})
+					} catch (e) {
+						console.error(e)
+					}
+				}
+
+				form.addEventListener("submit", (event) => {
+					event.preventDefault()
+					sendTodo()
 				})
+
 
 				function clearTodoInput() {
 					todoInput = document.getElementById("todo")
 					todoInput.value = ""
 				}
+
+				async function todoDone(id) {
+					try {
+						const response = await fetch(`${backendURL}/${id}`, {
+							method: "PUT"
+						})
+						if (await response.status == 200) {
+							document.getElementById(`todo-${id}`).remove()
+						}
+					} catch (e) {
+						console.error(e)
+					}
+				}
+
+				function createTodoElement(todo) {
+					const li = document.createElement("li")
+					li.innerText=todo["Text"]
+					li.id = `todo-${todo["Id"]}`
+					li.setAttribute("name", todo["Id"])
+					if (!todo["Done"]) {
+						const doneButton = document.createElement("button")
+						doneButton.innerText = "Done"
+						doneButton.addEventListener("click", (event) => {
+							todoDone(todo["Id"])
+						})
+						li.appendChild(doneButton)
+					}
+					todoList.appendChild(li)
+				}
+
+				async function fetchTodos() {
+					try {
+						const response = await fetch(backendURL, {
+							method: "GET",
+						})
+						const todos = await response.json()
+						if (todos && todos.length > 0) {
+							for (let todo of todos) {
+								createTodoElement(todo)
+							}
+						}
+					} catch (e) {
+						console.error(e)
+					}
+				}
+
+				document.addEventListener("DOMContentLoaded", (event) => {
+					fetchTodos()
+				})
+
 			</script>
 		</body>
 	</html>
