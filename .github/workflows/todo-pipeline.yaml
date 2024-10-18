@@ -1,91 +1,91 @@
-name: Release application
+# name: Release application
 
-on:
-  push:
-    paths:
-      - todo/**
+# on:
+#   push:
+#     paths:
+#       - todo/**
 
-env:
-  SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
-  PROJECT_ID: ${{ secrets.GKE_PROJECT }}
-  GKE_CLUSTER: dwk-cluster
-  GKE_ZONE: europe-north1-b
-  IMAGE_APP: todo-app
-  SERVICE_APP: todo-app
-  IMAGE_BACKEND: todo-backend
-  SERVICE_BACKEND: todo-backend
-  BRANCH: ${{ github.ref_name }}
+# env:
+#   SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
+#   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
+#   GKE_CLUSTER: dwk-cluster
+#   GKE_ZONE: europe-north1-b
+#   IMAGE_APP: todo-app
+#   SERVICE_APP: todo-app
+#   IMAGE_BACKEND: todo-backend
+#   SERVICE_BACKEND: todo-backend
+#   BRANCH: ${{ github.ref_name }}
 
-jobs:
-  build-publish-deploy:
-    environment: part3
-    name: Build, Publish and Deploy
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./todo
+# jobs:
+#   build-publish-deploy:
+#     environment: part3
+#     name: Build, Publish and Deploy
+#     runs-on: ubuntu-latest
+#     defaults:
+#       run:
+#         working-directory: ./todo
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - uses: google-github-actions/auth@v2
-        with:
-          credentials_json: '${{ secrets.GKE_SA_KEY }}'
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v4
+#       - uses: google-github-actions/auth@v2
+#         with:
+#           credentials_json: '${{ secrets.GKE_SA_KEY }}'
 
-      - name: 'Set up Cloud SDK'
-        uses: google-github-actions/setup-gcloud@v2
+#       - name: 'Set up Cloud SDK'
+#         uses: google-github-actions/setup-gcloud@v2
 
-      - name: 'Use gcloud CLI'
-        run: gcloud info
-      - run: gcloud --quiet auth configure-docker
-      - name: 'Get GKE credentials'
-        uses: 'google-github-actions/get-gke-credentials@v2'
-        with:
-          cluster_name: '${{ env.GKE_CLUSTER }}'
-          project_id: '${{ env.PROJECT_ID }}'
-          location: '${{ env.GKE_ZONE }}'
+#       - name: 'Use gcloud CLI'
+#         run: gcloud info
+#       - run: gcloud --quiet auth configure-docker
+#       - name: 'Get GKE credentials'
+#         uses: 'google-github-actions/get-gke-credentials@v2'
+#         with:
+#           cluster_name: '${{ env.GKE_CLUSTER }}'
+#           project_id: '${{ env.PROJECT_ID }}'
+#           location: '${{ env.GKE_ZONE }}'
 
-      - name: namespace
-        run: |
-          echo "$BRANCH"
-          if [ "$BRANCH" == "main" ]; then
-            echo "NAMESPACE=default" >> $GITHUB_ENV
-          else
-            echo "NAMESPACE=$BRANCH" >> $GITHUB_ENV
-          fi
-          echo "$NAMESPACE"
+#       - name: namespace
+#         run: |
+#           echo "$BRANCH"
+#           if [ "$BRANCH" == "main" ]; then
+#             echo "NAMESPACE=default" >> $GITHUB_ENV
+#           else
+#             echo "NAMESPACE=$BRANCH" >> $GITHUB_ENV
+#           fi
+#           echo "$NAMESPACE"
 
-      - name: Build app
-        run: docker build --tag "gcr.io/$PROJECT_ID/$IMAGE_APP:$NAMESPACE-$GITHUB_SHA" ./todo-app
-      - name: Publish app
-        run: docker push "gcr.io/$PROJECT_ID/$IMAGE_APP:$NAMESPACE-$GITHUB_SHA"
+#       - name: Build app
+#         run: docker build --tag "gcr.io/$PROJECT_ID/$IMAGE_APP:$NAMESPACE-$GITHUB_SHA" ./todo-app
+#       - name: Publish app
+#         run: docker push "gcr.io/$PROJECT_ID/$IMAGE_APP:$NAMESPACE-$GITHUB_SHA"
 
-      - name: Build backend
-        run: docker build --tag "gcr.io/$PROJECT_ID/$IMAGE_BACKEND:$NAMESPACE-$GITHUB_SHA" ./todo-backend
-      - name: Publish backend
-        run: docker push "gcr.io/$PROJECT_ID/$IMAGE_BACKEND:$NAMESPACE-$GITHUB_SHA"
+#       - name: Build backend
+#         run: docker build --tag "gcr.io/$PROJECT_ID/$IMAGE_BACKEND:$NAMESPACE-$GITHUB_SHA" ./todo-backend
+#       - name: Publish backend
+#         run: docker push "gcr.io/$PROJECT_ID/$IMAGE_BACKEND:$NAMESPACE-$GITHUB_SHA"
 
-      - name: Install sops
-        run: |-
-          curl -LO https://github.com/getsops/sops/releases/download/v3.9.1/sops-v3.9.1.linux.amd64
-          mv sops-v3.9.1.linux.amd64 /usr/local/bin/sops
-          chmod +x /usr/local/bin/sops
+#       - name: Install sops
+#         run: |-
+#           curl -LO https://github.com/getsops/sops/releases/download/v3.9.1/sops-v3.9.1.linux.amd64
+#           mv sops-v3.9.1.linux.amd64 /usr/local/bin/sops
+#           chmod +x /usr/local/bin/sops
 
-      - name: Decrypt secret
-        run: sops --decrypt secret.enc.yaml > secret.yaml
+#       - name: Decrypt secret
+#         run: sops --decrypt secret.enc.yaml > secret.yaml
           
 
-      - name: Set up Kustomize
-        uses: imranismail/setup-kustomize@v2
+#       - name: Set up Kustomize
+#         uses: imranismail/setup-kustomize@v2
 
-      - name: Deploy app and backend
-        run: |-
-          kubectl create namespace $NAMESPACE || true
-          kubectl config set-context --current --namespace=$NAMESPACE
-          kustomize edit set namespace $NAMESPACE
-          kustomize edit set image TODOAPP/IMAGE=gcr.io/$PROJECT_ID/$IMAGE_APP:$NAMESPACE-$GITHUB_SHA
-          kustomize edit set image TODOBACKEND/IMAGE=gcr.io/$PROJECT_ID/$IMAGE_BACKEND:$NAMESPACE-$GITHUB_SHA
-          kustomize build . | kubectl apply -f -
-          kubectl rollout status deployment $SERVICE_BACKEND
-          kubectl rollout status deployment $SERVICE_APP
-          kubectl get services -o wide
+#       - name: Deploy app and backend
+#         run: |-
+#           kubectl create namespace $NAMESPACE || true
+#           kubectl config set-context --current --namespace=$NAMESPACE
+#           kustomize edit set namespace $NAMESPACE
+#           kustomize edit set image TODOAPP/IMAGE=gcr.io/$PROJECT_ID/$IMAGE_APP:$NAMESPACE-$GITHUB_SHA
+#           kustomize edit set image TODOBACKEND/IMAGE=gcr.io/$PROJECT_ID/$IMAGE_BACKEND:$NAMESPACE-$GITHUB_SHA
+#           kustomize build . | kubectl apply -f -
+#           kubectl rollout status deployment $SERVICE_BACKEND
+#           kubectl rollout status deployment $SERVICE_APP
+#           kubectl get services -o wide

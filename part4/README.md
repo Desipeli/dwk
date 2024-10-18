@@ -96,6 +96,6 @@ Cpu usage limit set to 0.2 works well
 
 ![Analysis success](e_4.04/images/analysis_success.png)
 
-If the limit is set too low, the update fails and rolls back to previous
+If the limit is set too low (0.001), the update fails and rolls back to previous
 
 ![Analysis failed](e_4.04/images/analysis_failed.png)
