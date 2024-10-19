@@ -1,49 +1,49 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
-  name: todo-backend
+  name: todo-app
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: todo-backend
+      app: todo-app
   strategy:
     canary:
       steps:
-        - setWeight: 50
         - analysis:
             templates:
             - templateName: cpu-usage
   template:
     metadata:
       labels:
-        app: todo-backend
+        app: todo-app
     spec:
+      volumes:
+        - name: persistentdata
+          persistentVolumeClaim:
+            claimName: todo-claim
       containers:
-        - name: todo-backend
-          image: TODOBACKEND/IMAGE
+        - name: todo-app
+          image: TODOAPP/IMAGE
           imagePullPolicy: Always
           env:
           - name: PORT
-            value: "8003"
-          - name: NATS_URL
-            value: nats://my-nats:4222
-          envFrom:
-            - secretRef:
-                name: todo-database-secret
+            value: "8000"
+          - name: BACKEND_SERVICE_ADDR
+            value: http://todo-backend-svc:5678
           resources:
             limits:
-              cpu: "100m"
-              memory: "20Mi"
+              cpu: "10m"
+              memory: "15Mi"
           readinessProbe:
             initialDelaySeconds: 5
             periodSeconds: 5
             httpGet:
               path: /healthz
-              port: 8003
+              port: 8000
           livenessProbe:
             initialDelaySeconds: 20
             periodSeconds: 5
             httpGet:
               path: /healthz
-              port: 8003
+              port: 8000

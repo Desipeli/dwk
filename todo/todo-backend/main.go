@@ -11,9 +11,11 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/nats-io/nats.go"
 )
 
 var databaseURL string
+var natsURL string
 
 func main() {
 	port := os.Getenv("PORT")
@@ -22,6 +24,7 @@ func main() {
 	}
 
 	databaseURL = os.Getenv("DATABASE_URL")
+	natsURL = os.Getenv("NATS_URL")
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/todos/{id}", handleTodoDone)
@@ -59,11 +62,22 @@ func handleTodoDone(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close(r.Context())
 
-	_, err = conn.Exec(r.Context(), "UPDATE todos SET done=true WHERE id=$1", id)
+	var todoText string
+
+	err = conn.QueryRow(r.Context(), "UPDATE todos SET done=true WHERE id=$1 RETURNING todo", id).Scan(&todoText)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
+	log.Println(todoText)
+
+	nc, err := nats.Connect(natsURL)
+	if err != nil {
+		log.Println(err)
+	}
+	defer nc.Close()
+	nc.Publish("todo_done", []byte(todoText))
 
 	w.WriteHeader(http.StatusOK)
 }
@@ -166,6 +180,13 @@ func handlePostTodos(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
+	nc, err := nats.Connect(natsURL)
+	if err != nil {
+		log.Println(err)
+	}
+	defer nc.Close()
+	nc.Publish("new_todo", []byte(newTodo.Text))
 
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(newTodo)

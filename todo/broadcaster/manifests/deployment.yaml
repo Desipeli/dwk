@@ -1,12 +1,12 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
-  name: todo-backend
+  name: broadcaster
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: todo-backend
+      app: broadcaster
   strategy:
     canary:
       steps:
@@ -17,15 +17,15 @@ spec:
   template:
     metadata:
       labels:
-        app: todo-backend
+        app: broadcaster
     spec:
       containers:
-        - name: todo-backend
-          image: TODOBACKEND/IMAGE
+        - name: broadcaster
+          image: TODOBROADCASTER/IMAGE
           imagePullPolicy: Always
           env:
           - name: PORT
-            value: "8003"
+            value: "8006"
           - name: NATS_URL
             value: nats://my-nats:4222
           envFrom:
@@ -33,17 +33,17 @@ spec:
                 name: todo-database-secret
           resources:
             limits:
-              cpu: "100m"
-              memory: "20Mi"
+              cpu: "75m"
+              memory: "10Mi"
           readinessProbe:
             initialDelaySeconds: 5
             periodSeconds: 5
             httpGet:
               path: /healthz
-              port: 8003
+              port: 8006
           livenessProbe:
             initialDelaySeconds: 20
             periodSeconds: 5
             httpGet:
               path: /healthz
-              port: 8003
+              port: 8006

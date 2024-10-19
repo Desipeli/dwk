@@ -107,3 +107,21 @@ If the limit is set too low (0.001), the update fails and rolls back to previous
 - I changed the app to use json to transfer data
 - Added done field to database
 - Todos can be set to done
+
+## Exercise 4.06: Project v2.0
+
+- Install nats `helm install --set auth.enabled=false my-nats oci://registry-1.docker.io/bitnamicharts/nats`
+- Web service `kubectl port-forward my-nats-0 8222:8222`
+- Enable metrics `helm upgrade --set metrics.enabled=true,auth.enabled=false my-nats oci://registry-1.docker.io/bitnamicharts/nats`
+- Connect to exported `kubectl port-forward --namespace dwk-project svc/my-nats-metrics 7777:7777`
+- Configure serviceMonitor `helm upgrade -f valuesnats.yaml my-nats oci://registry-1.docker.io/bitnamicharts/nats`
+- Label for prometheus configuration `kubectl label servicemonitors.monitoring.coreos.com -n prometheus my-nats-metrics release=kube-prometheus-stack-1727939963`
+
+
+- Created new go project called broadcaster
+- Installed [nats go client](https://github.com/nats-io/nats.go)
+- Created Webhook for a discord server. Url is in the `secret.enc.yaml` file.
+
+There are two different subjects: `new_todo` and `todo_done`. Todo backend publishes messages when new todos are created or a todo is done. Broadcaster app subscribes to the subjects, and sends messages to discord channel using webhooks.
+
+![image from discord](e_4.06/images/discord-todo.png)
