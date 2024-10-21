@@ -74,7 +74,7 @@ func handleGetPing(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := fmt.Sprintf("pong %d", pongs)
+	response := fmt.Sprintf("pong: %d", pongs)
 
 	w.Write([]byte(response))
 }
