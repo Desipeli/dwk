@@ -9,4 +9,4 @@ resources:
 images:
 - name: PINGPONG/IMAGE
   newName: desipeli/dwk-pingpong
-  newTag: 29ac6b4337915963f92f34c6cd432b6655264395
+  newTag: 4f280361a2991f7569b245440eeb7b4e7567b2e7
