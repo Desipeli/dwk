@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres-stset
+spec:
+  serviceName: postgres-svc
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgresapp
+  template:
+    metadata:
+      labels:
+        app: postgresapp
+    spec:
+      containers:
+        - name: pings-database
+          image: postgres:17.0
+          ports:
+            - name: database
+              containerPort: 5432
+          volumeMounts:
+            - name: pings-data-storage
+              mountPath: /var/lib/postgresql/data
+              subPath: postgres
+            - name: init-config
+              mountPath: /docker-entrypoint-initdb.d/
+          envFrom:
+            - secretRef:
+                name: ping-database-secret
+      volumes:
+        - name: init-config
+          configMap:
+            name: postgres-init-config
+
+  volumeClaimTemplates:
+    - metadata:
+        name: pings-data-storage
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 100Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-svc
+spec:
+  ports:
+  - port: 5432
+    name: database
+  clusterIP: None
+  selector:
+    app: postgresapp
