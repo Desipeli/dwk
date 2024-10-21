@@ -9,6 +9,9 @@ jobs:
   build-publish:
     name: Build, Push, Release
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./ping-pong
 
     steps:
       - name: Checkout
@@ -22,7 +25,7 @@ jobs:
       
       - name: Build and publish ping-pong
         run: |-
-          docker build -t "desipeli/dwk-pingpong:$GITHUB_SHA" ping-pong/
+          docker build -t "desipeli/dwk-pingpong:$GITHUB_SHA" .
           docker push "desipeli/dwk-pingpong:$GITHUB_SHA"
       
       - name: Set up Kustomize
@@ -34,5 +37,5 @@ jobs:
       - name: commit kustomization.yaml to GitHub
         uses: EndBug/add-and-commit@v9
         with:
-          add: 'ping-pong/kustomization.yaml'
+          add: 'kustomization.yaml'
           message: New version released ${{ github.sha }}
