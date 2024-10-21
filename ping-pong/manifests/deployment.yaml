@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: ping-pong
-          image: desipeli/dwk-pingpong:4.01
+          image: PINGPONG/IMAGE
           imagePullPolicy: Always
           resources:
             limits:
