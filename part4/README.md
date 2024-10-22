@@ -125,3 +125,19 @@ If the limit is set too low (0.001), the update fails and rolls back to previous
 There are two different subjects: `new_todo` and `todo_done`. Todo backend publishes messages when new todos are created or a todo is done. Broadcaster app subscribes to the subjects, and sends messages to discord channel using webhooks.
 
 ![image from discord](e_4.06/images/discord-todo.png)
+
+## Exercise 4.07: GitOps the Project
+
+```bash
+$ kubectl create namespace argocd
+namespace/argocd created
+$ kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+$ kubectl port-forward svc/argocd-server -n argocd 8080:80
+
+```
+
+ [manifests](e_4.07/)
+
+![argocd view](e_4.07/images/argocd_pingpong.png)
+![argocd view2](e_4.07/images/argocd_pingpong2.png)

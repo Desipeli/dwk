@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ping-pong
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ping-pong
+  template:
+    metadata:
+      labels:
+        app: ping-pong
+    spec:
+      containers:
+        - name: ping-pong
+          image: PINGPONG/IMAGE
+          imagePullPolicy: Always
+          resources:
+            limits:
+              cpu: "50m"
+              memory: "10Mi"
+          readinessProbe:
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            httpGet:
+              path: /healthz
+              port: 8002
+          env:
+          - name: PORT
+            value: "8002"
+          envFrom:
+            - secretRef:
+                name: ping-database-secret
