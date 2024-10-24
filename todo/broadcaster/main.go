@@ -14,7 +14,23 @@ import (
 func main() {
 	natsURL := os.Getenv("NATS_URL")
 	port := os.Getenv("PORT")
-	discordWebhookUrl := os.Getenv("DISCORD_WEBHOOK_URL")
+
+	if natsURL == "" {
+		log.Fatal("provide env NATS_URL")
+	}
+
+	env := os.Getenv("ENV")
+	log.Printf("ENVIRONMENT %s", env)
+
+	var discordWebhookUrl string
+
+	if env == "production" {
+		discordWebhookUrl = os.Getenv("DISCORD_WEBHOOK_URL")
+		if discordWebhookUrl == "" {
+			log.Fatal("provide env DISCORD_WEBHOOK_URL")
+		}
+
+	}
 
 	nc, err := nats.Connect(natsURL)
 	if err != nil {
@@ -65,6 +81,11 @@ func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func PostMessage(url string, message *Message) error {
+	if url == "" { // Not in production
+		log.Printf("message: %s", message.Content)
+		return nil
+	}
+
 	jsonMessage, err := json.Marshal(message)
 	if err != nil {
 		return err
