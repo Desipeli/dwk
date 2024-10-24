@@ -21,4 +21,4 @@ images:
   - name: TODOBACKEND/IMAGE
     newName: desipeli/dwk-todo-backend:4.06
   - name: TODOBROADCASTER/IMAGE
-    newName: desipeli/dwk-broadcaster:4.06
+    newName: desipeli/dwk-broadcaster:4.08
