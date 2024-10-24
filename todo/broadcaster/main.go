@@ -29,7 +29,6 @@ func main() {
 		if discordWebhookUrl == "" {
 			log.Fatal("provide env DISCORD_WEBHOOK_URL")
 		}
-
 	}
 
 	nc, err := nats.Connect(natsURL)
