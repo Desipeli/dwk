@@ -7,6 +7,7 @@ on:
 
 jobs:
   build-publish:
+    if: github.ref_type == 'branch'
     name: Build, Push, Release
     runs-on: ubuntu-latest
     defaults:
