@@ -50,7 +50,7 @@ jobs:
         uses: EndBug/add-and-commit@v9
         with:
           add: 'broadcaster/overlays/staging/kustomization.yaml'
-          message: New version released $IMAGE_TAG
+          message: New version released ${{ IMAGE_TAG }}
 
       - name: Update production conf
         if: github.ref_type == 'tag'
@@ -62,4 +62,4 @@ jobs:
         uses: EndBug/add-and-commit@v9
         with:
           add: 'broadcaster/overlays/production/kustomization.yaml'
-          message: New version released $IMAGE_TAG
+          message: New version released ${{ IMAGE_TAG }}
