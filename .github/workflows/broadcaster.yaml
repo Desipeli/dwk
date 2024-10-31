@@ -39,24 +39,24 @@ jobs:
 
       - name: Update staging conf
         if: github.ref_type == 'branch'
-        working-directory: ./broadcaster/staging
+        working-directory: ./broadcaster/overlays/staging
         run: kustomize edit set image TODOBROADCASTER/IMAGE=desipeli/dwk-broadcaster:$GITHUB_SHA
       
       - name: commit staging kustomization.yaml to GitHub
         if: github.ref_type == 'branch'
         uses: EndBug/add-and-commit@v9
         with:
-          add: 'broadcaster/staging/kustomization.yaml'
+          add: 'broadcaster/overlays/staging/kustomization.yaml'
           message: New version released ${{ github.sha }}
 
       - name: Update production conf
         if: github.ref_type == 'tag'
-        working-directory: ./broadcaster/production
+        working-directory: ./broadcaster/overlays/production
         run: kustomize edit set image TODOBROADCASTER/IMAGE=desipeli/dwk-broadcaster:$GITHUB_SHA
       
       - name: commit production kustomization.yaml to GitHub
         if: github.ref_type == 'tag'
         uses: EndBug/add-and-commit@v9
         with:
-          add: 'broadcaster/production/kustomization.yaml'
+          add: 'broadcaster/overlays/production/kustomization.yaml'
           message: New version released ${{ github.ref_name }}
