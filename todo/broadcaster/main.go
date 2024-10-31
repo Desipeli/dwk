@@ -21,7 +21,7 @@ func main() {
 
 	env := os.Getenv("ENV")
 	log.Printf("ENVIRONMENT %s", env)
-	log.Printf("Testing deployment print")
+	log.Printf("Testing deployment print 1")
 
 	var discordWebhookUrl string
 
