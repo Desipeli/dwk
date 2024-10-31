@@ -18,6 +18,9 @@ var databaseURL string
 var natsURL string
 
 func main() {
+
+	log.Printf("Testing deployment print all three apps")
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8003"
