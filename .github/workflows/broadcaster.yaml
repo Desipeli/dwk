@@ -37,12 +37,26 @@ jobs:
       - name: Set up Kustomize
         uses: imranismail/setup-kustomize@v2
 
-      - name: Use right image
-        working-directory: ./broadcaster/base
+      - name: Update staging conf
+        if: github.ref_type == 'branch'
+        working-directory: ./broadcaster/staging
         run: kustomize edit set image TODOBROADCASTER/IMAGE=desipeli/dwk-broadcaster:$GITHUB_SHA
       
-      - name: commit kustomization.yaml to GitHub
+      - name: commit staging kustomization.yaml to GitHub
+        if: github.ref_type == 'branch'
         uses: EndBug/add-and-commit@v9
         with:
-          add: 'broadcaster/base/kustomization.yaml'
+          add: 'broadcaster/staging/kustomization.yaml'
           message: New version released ${{ github.sha }}
+
+      - name: Update production conf
+        if: github.ref_type == 'tag'
+        working-directory: ./broadcaster/production
+        run: kustomize edit set image TODOBROADCASTER/IMAGE=desipeli/dwk-broadcaster:$GITHUB_SHA
+      
+      - name: commit production kustomization.yaml to GitHub
+        if: github.ref_type == 'tag'
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: 'broadcaster/production/kustomization.yaml'
+          message: New version released ${{ github.ref_name }}
