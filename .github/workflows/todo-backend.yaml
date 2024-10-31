@@ -1,0 +1,65 @@
+name: Build and publish todo backend
+
+on:
+  push:
+    paths:
+      - todo/todo-backend/**
+
+env:
+  IMAGE_TAG: ${{ github.ref_type == 'tag' && github.ref_name || github.sha }}
+
+jobs:
+  build-publish:
+    name: Build, Push, Release
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./todo/todo-backend
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      
+      - name: Build and publish todo-backend
+        run: |-
+          docker build -t "desipeli/dwk-todo-backend:$IMAGE_TAG" .
+          docker push "desipeli/dwk-todo-backend:$IMAGE_TAG"
+
+      - name: Checkout manifests repo
+        uses: actions/checkout@v4
+        with:
+          repository: desipeli/dwk-gitops
+          token: ${{ secrets.PAT }}
+
+      - name: Set up Kustomize
+        uses: imranismail/setup-kustomize@v2
+
+      - name: Update staging conf
+        if: github.ref_type == 'branch'
+        working-directory: ./todo-backend/overlays/staging
+        run: kustomize edit set image TODOBACKEND/IMAGE=desipeli/dwk-todo-backend:$IMAGE_TAG
+      
+      - name: commit staging kustomization.yaml to GitHub
+        if: github.ref_type == 'branch'
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: 'todo-backend/overlays/staging/kustomization.yaml'
+          message: New version released ${{ env.IMAGE_TAG }}
+
+      - name: Update production conf
+        if: github.ref_type == 'tag'
+        working-directory: ./todo-backend/overlays/production
+        run: kustomize edit set image TODOBACKEND/IMAGE=desipeli/dwk-todo-backend:$IMAGE_TAG
+      
+      - name: commit production kustomization.yaml to GitHub
+        if: github.ref_type == 'tag'
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: 'todo-backend/overlays/production/kustomization.yaml'
+          message: New version released ${{ env.IMAGE_TAG }}
