@@ -9,17 +9,28 @@ import (
 	"todo-app/internal/templates"
 )
 
+var (
+	persistentPicTimestamp string
+	imageFile              string
+)
+
 const (
-	persistentPicTimestamp = "picDownloaded.txt"
-	imageFile              = "./public/image.jpg"
-	imageDuration          = 1 * time.Hour
-	timeLayout             = "2006-01-02 15:04:05.999 -0700"
+	imageDuration = 1 * time.Hour
+	timeLayout    = "2006-01-02 15:04:05.999 -0700"
 )
 
 var backendServiceAddr string
 
 func main() {
 	log.Printf("Testing deployment print all three apps 3")
+
+	mountPath := os.Getenv("MOUNT_PATH")
+	if mountPath == "" {
+		log.Fatal("Need env MOUNT_PATH")
+	}
+
+	persistentPicTimestamp = mountPath + "/picDownloaded.txt"
+	imageFile = mountPath + "/public/image.jpg"
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -33,7 +44,7 @@ func main() {
 	backendServiceAddr = beAddr
 
 	mux := http.NewServeMux()
-	mux.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))
+	mux.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir(mountPath+"/public"))))
 	mux.HandleFunc("/healthz", handleHealthCheck)
 	mux.HandleFunc("/", homePage)
 
