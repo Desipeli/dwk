@@ -19,7 +19,7 @@ const (
 var backendServiceAddr string
 
 func main() {
-	log.Printf("Testing deployment print all three apps 2")
+	log.Printf("Testing deployment print all three apps 3")
 
 	port := os.Getenv("PORT")
 	if port == "" {
