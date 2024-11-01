@@ -141,3 +141,20 @@ $ kubectl port-forward svc/argocd-server -n argocd 8080:80
 
 ![argocd view](e_4.07/images/argocd_pingpong.png)
 ![argocd view2](e_4.07/images/argocd_pingpong2.png)
+
+
+## Exercise 4.08: GitOps the Project
+
+- [Created new repo for configurations](https://github.com/Desipeli/dwk-gitops)
+- Created [workflows](e_4.08/). Added sleep command, because simultaneous modifications on gitops repo failed.
+- workflows are executed on push and new tag. If github.ref_type == 'tag', production configs are updated.
+- Created separate mountPaths for staging and production volumes for app.
+
+```sh
+$ docker exec -it k3d-k3s-default-agent-0 sh
+
+~ # mkdir /tmp/todo-app-staging/public -p
+~ # mkdir /tmp/todo-app-production/public -p
+```
+
+![Argo apps](e_4.08/argo_apps.png)
