@@ -148,7 +148,9 @@ $ kubectl port-forward svc/argocd-server -n argocd 8080:80
 - [Created new repo for configurations](https://github.com/Desipeli/dwk-gitops)
 - Created [workflows](e_4.08/). Added sleep command, because simultaneous modifications on gitops repo failed.
 - workflows are executed on push and new tag. If github.ref_type == 'tag', production configs are updated.
-- Created separate mountPaths for staging and production volumes for app.
+- Created staging and production mountPaths for app.
+- Added `127.0.0.1	staging.todo.com` and `127.0.0.1 production.todo.com` to /etc/hosts, so I can access the staging app with staging.todo.com:8081 and production with staging.todo.com:8081
+
 
 ```sh
 $ docker exec -it k3d-k3s-default-agent-0 sh
