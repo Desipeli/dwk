@@ -10,7 +10,7 @@ env:
 
 jobs:
   build-publish:
-    name: Build, Push, Release
+    name: Build, Push, Release todo backend
     runs-on: ubuntu-latest
     defaults:
       run:

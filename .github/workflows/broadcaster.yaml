@@ -10,7 +10,7 @@ env:
 
 jobs:
   build-publish:
-    name: Build, Push, Release
+    name: Build, Push, Release broadcaster
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -30,6 +30,9 @@ jobs:
         run: |-
           docker build -t "desipeli/dwk-broadcaster:$IMAGE_TAG" .
           docker push "desipeli/dwk-broadcaster:$IMAGE_TAG"
+
+      - name: Wait for other workflows
+        run: sleep 30
 
       - name: Checkout manifests repo
         uses: actions/checkout@v4

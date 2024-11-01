@@ -10,7 +10,7 @@ env:
 
 jobs:
   build-publish:
-    name: Build, Push, Release
+    name: Build, Push, Release todo app
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -30,6 +30,9 @@ jobs:
         run: |-
           docker build -t "desipeli/dwk-todo-app:$IMAGE_TAG" .
           docker push "desipeli/dwk-todo-app:$IMAGE_TAG"
+      
+      - name: Wait for other workflows
+        run: sleep 15
 
       - name: Checkout manifests repo
         uses: actions/checkout@v4
