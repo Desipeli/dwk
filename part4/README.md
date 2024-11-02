@@ -149,7 +149,7 @@ $ kubectl port-forward svc/argocd-server -n argocd 8080:80
 - Created [workflows](e_4.08/). Added sleep command, because simultaneous modifications on gitops repo failed.
 - workflows are executed on push and new tag. If github.ref_type == 'tag', production configs are updated.
 - Created staging and production mountPaths for app.
-- Added `127.0.0.1	staging.todo.com` and `127.0.0.1 production.todo.com` to /etc/hosts, so I can access the staging app with staging.todo.com:8081 and production with staging.todo.com:8081
+- Added `127.0.0.1	staging.todo.com` and `127.0.0.1 production.todo.com` to /etc/hosts, so I can access the staging app with staging.todo.com:8081 and production with production.todo.com:8081
 
 
 ```sh

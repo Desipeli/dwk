@@ -1,0 +1,7 @@
+apiVersion: dummy.dwk.dummy.dwk/v1
+kind: DummySite
+metadata:
+  name: dummysiteexample
+  namespace: default
+spec:
+  url: "https://www.wikipedia.com"
