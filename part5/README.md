@@ -42,5 +42,9 @@ $ make run SERVER_PORT=8085
 ```
 
 - Changed the api of dummysite.yaml from `apiVersion: dummy.dwk/v1` to `apiVersion: dummy.dwk.dummy.dwk/v1`, because kubebuilder added domain.
-- `$ make docker-build docker-push IMG=desipeli/dwk-dummy:1`
+- `$ make docker-build docker-push IMG=desipeli/dwk-dummy:1.3`
+
+Run with: `kubectl apply -f ./dummy-manifests`
+
+![image](e_5.01/wikipedia.png)
 
