@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  annotations:
+    rollout.argoproj.io/desired-replicas: "1"
+    rollout.argoproj.io/revision: "4"
+  creationTimestamp: "2024-11-03T11:04:06Z"
+  generation: 2
+  labels:
+    app: todo-app
+    rollouts-pod-template-hash: bd9498cc6
+  name: todo-app-bd9498cc6
+  namespace: production
+  ownerReferences:
+  - apiVersion: argoproj.io/v1alpha1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Rollout
+    name: todo-app
+    uid: 09a0eb04-5e40-4ac6-8b5c-32302a93e93c
+  resourceVersion: "720697"
+  uid: 611356a9-0a10-4867-93b9-7a35998807d2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-app
+      rollouts-pod-template-hash: bd9498cc6
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: todo-app
+        rollouts-pod-template-hash: bd9498cc6
+    spec:
+      containers:
+      - env:
+        - name: PORT
+          value: "8000"
+        - name: BACKEND_SERVICE_ADDR
+          value: http://todo-backend-svc:5678
+        - name: MOUNT_PATH
+          value: /tmp/todo-app-production
+        image: desipeli/dwk-todo-app:4.08v2
+        imagePullPolicy: Always
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /healthz
+            port: 8000
+            scheme: HTTP
+          initialDelaySeconds: 20
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+        name: todo-app
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /healthz
+            port: 8000
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources:
+          limits:
+            cpu: 20m
+            memory: 30Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /tmp/todo-app-production
+          name: persistentdata
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: persistentdata
+        persistentVolumeClaim:
+          claimName: todo-claim
+status:
+  availableReplicas: 1
+  fullyLabeledReplicas: 1
+  observedGeneration: 2
+  readyReplicas: 1
+  replicas: 1

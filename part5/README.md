@@ -48,3 +48,10 @@ Run with: `kubectl apply -f ./dummy-manifests`
 
 ![image](e_5.01/wikipedia.png)
 
+## Exercise 5.02: Project, the Service Mesh Edition
+
+- Had to add `config.linkerd.io/skip-outbound-ports: "4222"` annotation to backend and broadcaster.
+
+[manifests](e_5.02/manifests/production/)
+
+![linkerd image](e_5.02/linkerd.png)

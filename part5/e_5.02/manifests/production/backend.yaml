@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  annotations:
+    rollout.argoproj.io/desired-replicas: "1"
+    rollout.argoproj.io/revision: "7"
+  creationTimestamp: "2024-11-03T11:17:27Z"
+  generation: 2
+  labels:
+    app: todo-backend
+    rollouts-pod-template-hash: d9b9bb7
+  name: todo-backend-d9b9bb7
+  namespace: production
+  ownerReferences:
+  - apiVersion: argoproj.io/v1alpha1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Rollout
+    name: todo-backend
+    uid: fe90a2c2-7893-4b64-acc1-c971447b4f7c
+  resourceVersion: "722138"
+  uid: 71abe650-a25e-4935-ad67-39c59c9c7b7a
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-backend
+      rollouts-pod-template-hash: d9b9bb7
+  template:
+    metadata:
+      annotations:
+        config.linkerd.io/skip-outbound-ports: "4222"
+        linkerd.io/inject: enabled
+      creationTimestamp: null
+      labels:
+        app: todo-backend
+        rollouts-pod-template-hash: d9b9bb7
+    spec:
+      containers:
+      - env:
+        - name: PORT
+          value: "8003"
+        - name: NATS_URL
+          value: nats://production-nats:4222
+        envFrom:
+        - secretRef:
+            name: todo-database-secret
+        image: desipeli/dwk-todo-backend:4.08v2
+        imagePullPolicy: Always
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /healthz
+            port: 8003
+            scheme: HTTP
+          initialDelaySeconds: 20
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+        name: todo-backend
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /healthz
+            port: 8003
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources:
+          limits:
+            cpu: 200m
+            memory: 40Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+status:
+  availableReplicas: 1
+  fullyLabeledReplicas: 1
+  observedGeneration: 2
+  readyReplicas: 1
+  replicas: 1

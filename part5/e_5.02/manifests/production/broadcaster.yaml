@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  annotations:
+    rollout.argoproj.io/desired-replicas: "1"
+    rollout.argoproj.io/revision: "9"
+  creationTimestamp: "2024-11-03T11:17:26Z"
+  generation: 2
+  labels:
+    app: broadcaster
+    rollouts-pod-template-hash: fcf484cdd
+  name: broadcaster-fcf484cdd
+  namespace: production
+  ownerReferences:
+  - apiVersion: argoproj.io/v1alpha1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Rollout
+    name: broadcaster
+    uid: 0cddc6de-85a1-4750-94fa-012fcd8abb2b
+  resourceVersion: "722116"
+  uid: f22923eb-9da1-4a3e-a33e-aecc5ca8ffa5
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: broadcaster
+      rollouts-pod-template-hash: fcf484cdd
+  template:
+    metadata:
+      annotations:
+        config.linkerd.io/skip-outbound-ports: "4222"
+        linkerd.io/inject: enabled
+      creationTimestamp: null
+      labels:
+        app: broadcaster
+        rollouts-pod-template-hash: fcf484cdd
+    spec:
+      containers:
+      - env:
+        - name: PORT
+          value: "8006"
+        - name: ENV
+          value: production
+        - name: NATS_URL
+          value: nats://production-nats:4222
+        envFrom:
+        - secretRef:
+            name: todo-database-secret
+        image: desipeli/dwk-broadcaster:4.08v2
+        imagePullPolicy: Always
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /healthz
+            port: 8006
+            scheme: HTTP
+          initialDelaySeconds: 20
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+        name: broadcaster
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /healthz
+            port: 8006
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources:
+          limits:
+            cpu: 200m
+            memory: 50Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+status:
+  availableReplicas: 1
+  fullyLabeledReplicas: 1
+  observedGeneration: 2
+  readyReplicas: 1
+  replicas: 1
