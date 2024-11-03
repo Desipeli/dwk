@@ -55,3 +55,7 @@ Run with: `kubectl apply -f ./dummy-manifests`
 [manifests](e_5.02/manifests/production/)
 
 ![linkerd image](e_5.02/linkerd.png)
+
+## Exercise 5.03: Learn from external material
+
+[script](e_5.03/script)
