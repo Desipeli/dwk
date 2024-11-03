@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wikipedia
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      volumes:
+        - name: public
+          emptyDir: {}
+      containers:
+      - name: nginx
+        image: nginx
+        volumeMounts:
+            - name: public
+              mountPath: /usr/share/nginx/html
+        ports:
+          - containerPort: 80
+      initContainers:
+        - name: fetch-kubernetes
+          image: busybox
+          volumeMounts:
+            - name: public
+              mountPath: /usr/share/nginx/html
+          command:
+          - /bin/sh
+          - -c
+          - |
+            wget https://en.wikipedia.org/wiki/Kubernetes -O /usr/share/nginx/html/index.html
+            sleep 2
+        - name: fetch-random
+          image: busybox
+          restartPolicy: Always
+          volumeMounts:
+            - name: public
+              mountPath: /usr/share/nginx/html
+          command:
+            - /bin/sh
+            - -c
+            - |
+              echo "starting sleep"
+              sleep $((300 + $(od -An -N1 -i /dev/urandom) % 600))
+              WIKIPEDIA=$(wget --server-response --spider https://en.wikipedia.org/wiki/Special:Random 2>&1 | grep -i Location | awk '{print $2}' | tr -d '\r')
+              wget $WIKIPEDIA -O /usr/share/nginx/html/tmp_index.html
+              mv /usr/share/nginx/html/tmp_index.html /usr/share/nginx/html/index.html

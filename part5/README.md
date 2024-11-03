@@ -59,3 +59,11 @@ Run with: `kubectl apply -f ./dummy-manifests`
 ## Exercise 5.03: Learn from external material
 
 [script](e_5.03/script)
+
+## Exercise 5.04: Wikipedia with init and sidecar
+
+[manifests](e_5.04/)
+
+- For some reason nginx displays 404 sometimes...
+
+![image](e_5.04/5_04.png)
