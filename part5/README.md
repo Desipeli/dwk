@@ -184,3 +184,23 @@ Hello World!
 $ curl -H "Host: hello.default.example.com" http://localhost:8081
 Hello World!
 ```
+
+## Exercise 5.07: Deploy to Serverless
+
+[manifests](e_5.07/)
+
+```bash
+$ kubectl get ksvc
+NAME           URL                                       LATESTCREATED        LATESTREADY          READY   REASON
+hello          http://hello.default.example.com          hello-00002          hello-00002          True    
+kn-ping-pong   http://kn-ping-pong.default.example.com   kn-ping-pong-00002   kn-ping-pong-00002   True
+
+$ curl -H "Host: kn-ping-pong.default.example.com" http://localhost:8081/pingpong
+pongs: 2
+$ curl -H "Host: kn-ping-pong.default.example.com" http://localhost:8081/pingpong
+pongs: 3
+$ curl -H "Host: kn-ping-pong.default.example.com" http://localhost:8081
+{"pongs":3}
+```
+
+

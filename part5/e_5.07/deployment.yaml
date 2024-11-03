@@ -1,0 +1,27 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: kn-ping-pong
+spec:
+  template:
+    spec:
+      containers:
+      - image: desipeli/dwk-pingpong:7a72bfca3a6bbf25c1dff0b917902aad7fd91c72
+        resources:
+          limits:
+            cpu: "50m"
+            memory: "10Mi"
+        readinessProbe:
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          httpGet:
+            path: /healthz
+            port: 80
+        # env:
+        # - name: PORT
+        #   value: "8080"
+        envFrom:
+          - secretRef:
+              name: ping-database-secret
+        ports:
+        - containerPort: 80
