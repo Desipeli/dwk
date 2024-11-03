@@ -67,3 +67,38 @@ Run with: `kubectl apply -f ./dummy-manifests`
 - For some reason nginx displays 404 sometimes...
 
 ![image](e_5.04/5_04.png)
+
+
+## Exercise 5.05: Platform comparison, Rancher and OpenShift
+
+### OpenShift
+
+- Self or fully managed service
+- Includes Red Hats enhancements to Kubernetes
+- Includes everything needed for development lifecycle: ci/cd, environments...
+- Preinstalled and configured monitoring stack
+- Security monitoring everywhere
+- Cli and browser based web console to manage and visualize
+- Run and manage also virtual machine workloads
+- Central authentication and authorization
+- Built-in container image registry
+- Marketplace with add-ons 
+
+Openshift seems to be more opinionated, and is probably easier to get running because of that. However, there is a risk of vendor lock in.
+
+### Rancher
+
+- Open source
+- Centralized authentication, access control and observability
+- For bare metal, private and public clouds
+- app library
+- audit logging and rate-limiting
+- Simplifies Kubernetes
+- Can manage clusters even if they are not created with Rancher
+- No risk of vendor lock in
+
+100% open source and no risk of vendor lock in (based on their site). Integrates other open source projects to enhance Kubernetes.
+
+### Which is better?
+
+For small organization Rancher, because it is open source, community version is free and no risk of vendor lock in.
