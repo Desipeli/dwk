@@ -102,3 +102,85 @@ Openshift seems to be more opinionated, and is probably easier to get running be
 ### Which is better?
 
 For small organization Rancher, because it is open source, community version is free and no risk of vendor lock in.
+
+## Exercise 5.06: Trying Serverless
+
+Deleted the current cluster and created new one
+
+```bash
+$ k3d cluster create --port 8082:30080@agent:0 -p 8081:80@loadbalancer --agents 2 --k3s-arg "--disable=traefik@server:0"
+```
+
+After Knative installation steps
+
+```bash
+$ kubectl get pods -n knative-serving
+NAME                                      READY   STATUS    RESTARTS   AGE
+activator-794bf4b5f-jm4hq                 1/1     Running   0          52s
+autoscaler-678cd4b756-sklzl               1/1     Running   0          52s
+controller-749fb7bc8b-lwppf               1/1     Running   0          52s
+net-kourier-controller-6c6b48b764-78ctj   1/1     Running   0          24s
+webhook-7c7d966789-g4pmn                  1/1     Running   0          52s
+```
+
+### Deploying a Knative Service from [yaml](e_5.06/knative-service.yaml)
+
+[Knative service](e_5.06/knative-service.yaml)
+
+```bash
+$ kubectl apply -f e_5.06/
+Warning: Kubernetes default value is insecure, Knative may default this to secure in a future release: spec.template.spec.containers[0].securityContext.allowPrivilegeEscalation, spec.template.spec.containers[0].securityContext.capabilities, spec.template.spec.containers[0].securityContext.runAsNonRoot, spec.template.spec.containers[0].securityContext.seccompProfile
+service.serving.knative.dev/hello created
+
+$ kubectl patch configmap/config-domain \
+      --namespace knative-serving \
+      --type merge \
+      --patch '{"data":{"example.com":""}}'
+
+$ kubectl get ksvc
+NAME    URL                                LATESTCREATED   LATESTREADY   READY   REASON
+hello   http://hello.default.example.com   hello-00001     hello-00001   True
+
+$ curl -H "Host: hello.default.example.com" http://localhost:8081
+Hello World!
+```
+
+### Autoscaling
+
+```bash
+$ kubectl get pod -l serving.knative.dev/service=hello -w
+NAME                                     READY   STATUS    RESTARTS   AGE
+hello-00001-deployment-5f84fb867-j242w   0/2     Pending   0          0s
+hello-00001-deployment-5f84fb867-j242w   0/2     Pending   0          0s
+hello-00001-deployment-5f84fb867-j242w   0/2     ContainerCreating   0          0s
+hello-00001-deployment-5f84fb867-j242w   1/2     Running             0          1s
+hello-00001-deployment-5f84fb867-j242w   2/2     Running             0          1s
+hello-00001-deployment-5f84fb867-j242w   2/2     Terminating         0          68s
+hello-00001-deployment-5f84fb867-j242w   1/2     Terminating         0          90s
+```
+
+### Traffic splitting
+
+```bash
+$ curl -H "Host: hello.default.example.com" http://localhost:8081
+Hello Knative!
+
+$ kn revisions list
+NAME          SERVICE   TRAFFIC   TAGS   GENERATION   AGE     CONDITIONS   READY   REASON
+hello-00002   hello     100%             2            6m23s   3 OK / 4     True    
+hello-00001   hello                      1            29m     3 OK / 4     True 
+
+# After adding traffic rules
+
+$ kn revisions list
+NAME          SERVICE   TRAFFIC   TAGS   GENERATION   AGE     CONDITIONS   READY   REASON
+hello-00002   hello     50%              2            5m36s   3 OK / 4     True    
+hello-00001   hello     50%              1            28m     3 OK / 4     True 
+
+$ curl -H "Host: hello.default.example.com" http://localhost:8081
+Hello Knative!
+$ curl -H "Host: hello.default.example.com" http://localhost:8081
+Hello World!
+$ curl -H "Host: hello.default.example.com" http://localhost:8081
+Hello World!
+```
