@@ -203,4 +203,48 @@ $ curl -H "Host: kn-ping-pong.default.example.com" http://localhost:8081
 {"pongs":3}
 ```
 
+## Exercise 5.08: Landscape
 
+[images](e_5.08/)
+
+### Used (purple)
+
+- `Helm`: Installed kubernetes packages like Prometheus
+- `PostgreSQL`: Used to store pongs and todos
+- `Argo`: Used for deployment (rollouts, canary)
+- `Flagger`: Canary in 5.03
+- `Github Actions`: CI/CD, GitOps
+- `Nats`: Messaging between apps
+- `Kubernetes`: Container management
+- `Knative`: Serverless deployment
+- `Nginx`: Used to serve web pages
+- `Linkerd`: Used for project to monitor traffic
+- `Traefik`: Used for ingress
+- `SOPS`: Ecrypting yaml files
+- `Google Container/Artifact Registry`: Stored images in part 3
+- `Prometheus`: Monitoring for the project
+- `Grafana`: Query and visualize
+- `Grafana Loki`: View logs in Grafana
+
+### Indirectly (blue)
+
+- `OpenAPI`: Specifications for APIs
+- `Google Persistent Disk`: Automatically provisioned for persistent volume claims in GKE
+- `Flannel`: k3s uses flannel
+- `cilium`: GKE uses cilium
+- `CNI`: Specification for network interfaces in Linux and Windows containers. Used in Kubernetes.
+- `containerd`: Used by docker and GKE to manage container lifecycle
+- `Sigstore`: installing knative -> cosign -> sigstore
+- `CoreDNS`: Used by k3s
+- `kube-router`: Used by k3s, netpol controller
+
+
+
+### Outside of this course (green)
+
+- Docker Compose
+- MariaDB
+- MongoDB
+- MySQL
+- Redis
+- GitLab
